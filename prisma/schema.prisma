@@ -1,0 +1,448 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  UNPUBLISHED
+}
+
+enum SettlementStatus {
+  PENDING
+  WON
+  LOST
+  VOID
+}
+
+enum PredictionMarketType {
+  MATCH_RESULT_1X2
+  DOUBLE_CHANCE
+  OVER_UNDER
+  BOTH_TEAMS_TO_SCORE
+  DRAW_NO_BET
+  OTHER
+}
+
+enum SyncJobStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  PARTIAL
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  PUBLISH
+  UNPUBLISH
+  ARCHIVE
+  SETTLE
+  LOGIN
+  LOGOUT
+  SYNC
+  BOOTSTRAP
+  SETTINGS_UPDATE
+  RESEARCH_GENERATE
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  sessions           Session[]
+  predictionsCreated Prediction[]      @relation("PredictionCreatedBy")
+  predictionsUpdated Prediction[]      @relation("PredictionUpdatedBy")
+  settlements        ResultSettlement[]
+  researchReports    ResearchReport[]
+  auditLogs          AuditLog[]
+  syncJobs           SyncJob[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Sport {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  competitions Competition[]
+  teams        Team[]
+  matches      Match[]
+  predictions  Prediction[]
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  flagUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  competitions Competition[]
+  teams        Team[]
+}
+
+model DataProvider {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  websiteUrl  String?
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  competitions Competition[]
+  teams        Team[]
+  matches      Match[]
+  syncJobs     SyncJob[]
+}
+
+model Competition {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  shortName       String?
+  type            String?
+  sportId         String
+  countryId       String?
+  providerId      String?
+  providerRef     String?
+  logoUrl         String?
+  logoAttribution String?
+  logoMissing     Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sport    Sport         @relation(fields: [sportId], references: [id])
+  country  Country?      @relation(fields: [countryId], references: [id])
+  provider DataProvider? @relation(fields: [providerId], references: [id])
+  seasons  Season[]
+  teams    TeamCompetition[]
+  matches  Match[]
+  predictions Prediction[]
+
+  @@unique([providerId, providerRef])
+  @@index([sportId])
+  @@index([countryId])
+  @@index([name])
+}
+
+model Season {
+  id            String   @id @default(cuid())
+  competitionId String
+  name          String
+  yearStart     Int?
+  yearEnd       Int?
+  isCurrent     Boolean  @default(false)
+  providerRef   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  matches     Match[]
+  teams       TeamCompetition[]
+
+  @@unique([competitionId, name])
+  @@index([competitionId, isCurrent])
+}
+
+model Team {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  shortName       String?
+  sportId         String
+  countryId       String?
+  providerId      String?
+  providerRef     String?
+  logoUrl         String?
+  logoAttribution String?
+  logoMissing     Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sport         Sport              @relation(fields: [sportId], references: [id])
+  country       Country?           @relation(fields: [countryId], references: [id])
+  provider      DataProvider?      @relation(fields: [providerId], references: [id])
+  competitions  TeamCompetition[]
+  homeMatches   Match[]            @relation("HomeTeam")
+  awayMatches   Match[]            @relation("AwayTeam")
+
+  @@unique([providerId, providerRef])
+  @@index([sportId])
+  @@index([name])
+}
+
+model TeamCompetition {
+  id            String   @id @default(cuid())
+  teamId        String
+  competitionId String
+  seasonId      String?
+  createdAt     DateTime @default(now())
+
+  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  season      Season?     @relation(fields: [seasonId], references: [id])
+
+  @@unique([teamId, competitionId, seasonId])
+  @@index([competitionId])
+}
+
+model Match {
+  id            String    @id @default(cuid())
+  sportId       String
+  competitionId String
+  seasonId      String?
+  homeTeamId    String
+  awayTeamId    String
+  kickoffAt     DateTime?
+  venue         String?
+  venueVerified Boolean   @default(false)
+  providerId    String?
+  providerRef   String?
+  homeScore     Int?
+  awayScore     Int?
+  status        String    @default("SCHEDULED")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sport       Sport         @relation(fields: [sportId], references: [id])
+  competition Competition   @relation(fields: [competitionId], references: [id])
+  season      Season?       @relation(fields: [seasonId], references: [id])
+  homeTeam    Team          @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team          @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  provider    DataProvider? @relation(fields: [providerId], references: [id])
+  predictions Prediction[]
+
+  @@unique([providerId, providerRef])
+  @@index([competitionId, kickoffAt])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+}
+
+model Prediction {
+  id                   String            @id @default(cuid())
+  slug                 String            @unique
+  title                String
+  sportId              String
+  competitionId        String
+  matchId              String
+  marketType           PredictionMarketType
+  marketLabel          String
+  selection            String
+  selectionDetail      String?
+  oddsAtPublication    Decimal?          @db.Decimal(10, 3)
+  stake                Decimal?          @db.Decimal(12, 2)
+  publicationStatus    PublicationStatus @default(DRAFT)
+  publishedAt          DateTime?
+  unpublishedAt        DateTime?
+  settlementStatus     SettlementStatus  @default(PENDING)
+  isFeatured           Boolean           @default(false)
+  confidenceLevel      String?
+  confidenceNote       String?
+  analysisOverview     String?
+  recentForm           String?
+  headToHead           String?
+  homeAwayStats        String?
+  injuriesSuspensions  String?
+  expectedLineups      String?
+  tacticalAnalysis     String?
+  psychologicalContext String?
+  statisticalAssessment String?
+  predictionRationale  String?
+  counterarguments     String?
+  showOverview         Boolean           @default(true)
+  showRecentForm       Boolean           @default(true)
+  showHeadToHead       Boolean           @default(true)
+  showHomeAwayStats    Boolean           @default(true)
+  showInjuries         Boolean           @default(true)
+  showLineups          Boolean           @default(false)
+  showTactical         Boolean           @default(true)
+  showPsychological    Boolean           @default(true)
+  showStatistical      Boolean           @default(true)
+  showRationale        Boolean           @default(true)
+  showCounterarguments Boolean           @default(true)
+  showSources          Boolean           @default(true)
+  createdById          String
+  updatedById          String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  sport       Sport              @relation(fields: [sportId], references: [id])
+  competition Competition        @relation(fields: [competitionId], references: [id])
+  match       Match              @relation(fields: [matchId], references: [id])
+  createdBy   AdminUser          @relation("PredictionCreatedBy", fields: [createdById], references: [id])
+  updatedBy   AdminUser?         @relation("PredictionUpdatedBy", fields: [updatedById], references: [id])
+  sources     PredictionSource[]
+  settlements ResultSettlement[]
+  oddsSnapshots OddsSnapshot[]
+  researchReports ResearchReport[]
+
+  @@index([publicationStatus, publishedAt])
+  @@index([settlementStatus])
+  @@index([sportId, publicationStatus])
+  @@index([competitionId, publicationStatus])
+  @@index([isFeatured, publicationStatus])
+  @@index([marketType])
+}
+
+model PredictionSource {
+  id            String   @id @default(cuid())
+  predictionId  String
+  title         String
+  url           String
+  retrievedAt   DateTime
+  notes         String?
+  isVerified    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+
+  @@index([predictionId])
+}
+
+model ResearchReport {
+  id                 String   @id @default(cuid())
+  predictionId       String?
+  matchId            String?
+  createdById        String
+  status             String   @default("DRAFT")
+  summary            String?
+  strengths          String?
+  weaknesses         String?
+  risks              String?
+  marketSuggestions  String?
+  structuredDraft    String?
+  verifiedFacts      String?
+  uncertainClaims    String?
+  sourcesJson        String?
+  searchRan          Boolean  @default(false)
+  aiProvider         String?
+  modelName          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  prediction Prediction? @relation(fields: [predictionId], references: [id], onDelete: SetNull)
+  createdBy  AdminUser   @relation(fields: [createdById], references: [id])
+
+  @@index([predictionId])
+  @@index([createdById])
+}
+
+model ResultSettlement {
+  id              String           @id @default(cuid())
+  predictionId    String
+  status          SettlementStatus
+  finalHomeScore  Int?
+  finalAwayScore  Int?
+  settledAt       DateTime         @default(now())
+  notes           String?
+  verificationSource String?
+  settledById     String
+  previousStatus  SettlementStatus?
+  createdAt       DateTime         @default(now())
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  settledBy  AdminUser  @relation(fields: [settledById], references: [id])
+
+  @@index([predictionId, settledAt])
+}
+
+model OddsSnapshot {
+  id           String   @id @default(cuid())
+  predictionId String
+  odds         Decimal  @db.Decimal(10, 3)
+  bookmaker    String?
+  capturedAt   DateTime @default(now())
+  notes        String?
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+
+  @@index([predictionId])
+}
+
+model SyncJob {
+  id           String        @id @default(cuid())
+  providerId   String
+  triggeredById String?
+  status       SyncJobStatus @default(PENDING)
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  competitionsUpserted Int   @default(0)
+  teamsUpserted        Int   @default(0)
+  logosMissing         Int   @default(0)
+  errorsJson   String?
+  logJson      String?
+  createdAt    DateTime      @default(now())
+
+  provider    DataProvider @relation(fields: [providerId], references: [id])
+  triggeredBy AdminUser?   @relation(fields: [triggeredById], references: [id])
+
+  @@index([providerId, createdAt])
+  @@index([status])
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  actorId    String?
+  action     AuditAction
+  entityType String
+  entityId   String?
+  summary    String
+  beforeJson String?
+  afterJson  String?
+  ipAddress  String?
+  createdAt  DateTime    @default(now())
+
+  actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
+model SiteSettings {
+  id                    String   @id @default("default")
+  siteName              String   @default("PREDIQ")
+  tagline               String   @default("AI SPORTS PREDICTIONS")
+  featuredPredictionId  String?
+  contactEmail          String?
+  responsibleGamblingUrl String?
+  methodologyText       String?
+  aboutText             String?
+  updatedAt             DateTime @updatedAt
+}
