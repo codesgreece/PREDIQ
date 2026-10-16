@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getEnv } from "@/lib/env";
+
+export const dynamic = "force-dynamic";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = getEnv().APP_URL;
+  const base = process.env.APP_URL || "https://prediq-codesgreeces-projects.vercel.app";
   return {
     rules: [
       {
@@ -11,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/admin/", "/api/", "/login"],
       },
     ],
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: `${base.replace(/\/$/, "")}/sitemap.xml`,
   };
 }

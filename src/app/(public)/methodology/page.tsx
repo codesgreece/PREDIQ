@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { StaticPage } from "@/components/content/static-page";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = { title: "Methodology" };
 
 export default async function MethodologyPage() {

@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
-import { getEnv } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = getEnv().APP_URL;
+  const base = (
+    process.env.APP_URL || "https://prediq-codesgreeces-projects.vercel.app"
+  ).replace(/\/$/, "");
   const [predictions, competitions] = await Promise.all([
     prisma.prediction.findMany({
       where: { publicationStatus: "PUBLISHED" },

@@ -100,10 +100,16 @@ Optional. Set `AI_API_KEY` (+ `AI_API_BASE_URL`, `AI_MODEL`) for OpenAI-compatib
 
 ## Deployment (Vercel)
 
-1. Provision managed PostgreSQL (Neon, Supabase Postgres, RDS, etc.).
-2. Set all secrets from `.env.example` in the Vercel project.
-3. Build command: `prisma migrate deploy && next build` (or use `npm run db:deploy` in a release step).
-4. Do not store production data or uploads on the ephemeral serverless filesystem.
+1. Provision managed PostgreSQL (Neon via Vercel Storage is supported).
+2. Set secrets in the Vercel project:
+   - `DATABASE_URL` (usually auto-injected by Neon)
+   - `SESSION_SECRET` (≥ 32 chars)
+   - `CSRF_SECRET` (≥ 32 chars)
+   - `APP_URL` (your production URL)
+   - optional: `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD`, `API_FOOTBALL_KEY`, `AI_API_KEY`
+3. Build command is already `prisma generate && prisma migrate deploy && next build`.
+4. After first deploy, seed once if needed: `npm run db:seed` against the production `DATABASE_URL`.
+5. Do not store production data or uploads on the ephemeral serverless filesystem.
 
 ## Security notes
 
