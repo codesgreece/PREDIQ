@@ -146,7 +146,16 @@ export default async function PredictionsPage({
 
       {!result.items.length ? (
         <div className="mt-8 surface-card border-dashed p-10 text-center text-[var(--text-muted)]">
-          {el.predictions.emptyFiltered}
+          {filters.q ||
+          filters.sport ||
+          filters.competition ||
+          filters.country ||
+          filters.market ||
+          filters.status ||
+          filters.from ||
+          filters.to
+            ? el.predictions.emptyFiltered
+            : el.predictions.empty}
         </div>
       ) : null}
 
