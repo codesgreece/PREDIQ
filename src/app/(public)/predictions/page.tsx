@@ -49,23 +49,30 @@ export default async function PredictionsPage({
     }),
   ]);
 
+  const hasFilters = Boolean(
+    filters.q ||
+      filters.sport ||
+      filters.competition ||
+      filters.country ||
+      filters.market ||
+      filters.status ||
+      filters.from ||
+      filters.to,
+  );
+
   return (
-    <div className="section-shell py-12">
-      <h1 className="section-title">{el.nav.predictions}</h1>
+    <div className="section-shell page-stack">
+      <h1 className="page-title">{el.nav.predictions}</h1>
       <p className="section-subtitle">{el.predictions.draftsNever}</p>
 
-      <form className="mt-8 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)]/60 p-4 md:grid-cols-3 lg:grid-cols-4">
+      <form className="filter-bar mt-5 md:grid-cols-3 lg:grid-cols-4">
         <input
           name="q"
           defaultValue={filters.q || ""}
           placeholder={el.predictions.search}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         />
-        <select
-          name="sport"
-          defaultValue={filters.sport || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="sport" defaultValue={filters.sport || ""} className="control">
           <option value="">{el.predictions.allSports}</option>
           {sports.map((s) => (
             <option key={s.id} value={s.slug}>
@@ -76,7 +83,7 @@ export default async function PredictionsPage({
         <select
           name="competition"
           defaultValue={filters.competition || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         >
           <option value="">{el.predictions.allCompetitions}</option>
           {competitions.map((c) => (
@@ -85,11 +92,7 @@ export default async function PredictionsPage({
             </option>
           ))}
         </select>
-        <select
-          name="country"
-          defaultValue={filters.country || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="country" defaultValue={filters.country || ""} className="control">
           <option value="">{el.predictions.allCountries}</option>
           {countries.map((c) => (
             <option key={c.id} value={c.code}>
@@ -97,11 +100,7 @@ export default async function PredictionsPage({
             </option>
           ))}
         </select>
-        <select
-          name="market"
-          defaultValue={filters.market || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="market" defaultValue={filters.market || ""} className="control">
           <option value="">{el.predictions.allMarkets}</option>
           <option value="MATCH_RESULT_1X2">{el.markets.MATCH_RESULT_1X2}</option>
           <option value="DOUBLE_CHANCE">{el.markets.DOUBLE_CHANCE}</option>
@@ -110,11 +109,7 @@ export default async function PredictionsPage({
           <option value="DRAW_NO_BET">{el.markets.DRAW_NO_BET}</option>
           <option value="OTHER">{el.markets.OTHER}</option>
         </select>
-        <select
-          name="status"
-          defaultValue={filters.status || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="status" defaultValue={filters.status || ""} className="control">
           <option value="">{el.predictions.allStatuses}</option>
           <option value="PENDING">{el.status.PENDING}</option>
           <option value="WON">{el.status.WON}</option>
@@ -125,41 +120,32 @@ export default async function PredictionsPage({
           type="date"
           name="from"
           defaultValue={filters.from ? filters.from.toISOString().slice(0, 10) : ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         />
         <input
           type="date"
           name="to"
           defaultValue={filters.to ? filters.to.toISOString().slice(0, 10) : ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         />
-        <button className="h-11 rounded-xl bg-[var(--neon)] px-4 text-sm font-semibold text-[#04140f] md:col-span-2 lg:col-span-1">
+        <button className="btn-primary md:col-span-2 lg:col-span-1">
           {el.predictions.apply}
         </button>
       </form>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid min-w-0 gap-3 md:grid-cols-2">
         {result.items.map((p) => (
           <PredictionCard key={p.id} prediction={p} />
         ))}
       </div>
 
       {!result.items.length ? (
-        <div className="mt-8 surface-card border-dashed p-10 text-center text-[var(--text-muted)]">
-          {filters.q ||
-          filters.sport ||
-          filters.competition ||
-          filters.country ||
-          filters.market ||
-          filters.status ||
-          filters.from ||
-          filters.to
-            ? el.predictions.emptyFiltered
-            : el.predictions.empty}
+        <div className="empty-state mt-5">
+          {hasFilters ? el.predictions.emptyFiltered : el.predictions.empty}
         </div>
       ) : null}
 
-      <div className="mt-8 flex items-center justify-between text-sm text-[var(--text-muted)]">
+      <div className="mt-5 flex items-center justify-between text-sm text-[var(--text-muted)]">
         <span>
           {el.predictions.page} {result.page} {el.predictions.of} {result.pageCount} ·{" "}
           {result.total} {el.predictions.publishedCount}

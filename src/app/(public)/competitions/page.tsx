@@ -29,41 +29,33 @@ export default async function CompetitionsPage() {
   const withPublished = competitions.filter((c) => c._count.predictions > 0);
 
   return (
-    <div className="section-shell py-12">
-      <h1 className="section-title">{el.competitions.title}</h1>
+    <div className="section-shell page-stack">
+      <h1 className="page-title">{el.competitions.title}</h1>
       <p className="section-subtitle">{el.competitions.subtitle}</p>
 
       {withPublished.length ? (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {withPublished.map((c) => (
             <Link
               key={c.id}
               href={`/competitions/${c.slug}`}
-              className="surface-card group p-5 transition hover:-translate-y-0.5 hover:border-[var(--border-strong)]"
+              className="surface-card group flex items-center gap-3 p-3.5 transition-colors hover:border-[var(--border-strong)]"
             >
-              <div className="flex items-center gap-3">
-                <CompetitionLogo
-                  name={c.name}
-                  logoUrl={c.logoUrl}
-                  size={44}
-                />
-                <div className="min-w-0">
-                  <h2 className="truncate text-lg text-[var(--text)] transition-colors group-hover:text-[var(--neon)]">
-                    {c.name}
-                  </h2>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {c.country?.name || el.competitions.international} ·{" "}
-                    {c._count.predictions} {el.competitions.published}
-                  </p>
-                </div>
+              <CompetitionLogo name={c.name} logoUrl={c.logoUrl} size={36} />
+              <div className="min-w-0">
+                <h2 className="truncate text-base text-[var(--text)] group-hover:text-[var(--neon)]">
+                  {c.name}
+                </h2>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {c.country?.name || el.competitions.international} ·{" "}
+                  {c._count.predictions} {el.competitions.published}
+                </p>
               </div>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="surface-card mt-8 border-dashed p-10 text-center text-[var(--text-muted)]">
-          {el.competitions.empty}
-        </div>
+        <div className="empty-state mt-5">{el.competitions.empty}</div>
       )}
     </div>
   );

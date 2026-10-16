@@ -44,22 +44,22 @@ export default async function StatisticsPage() {
   }
 
   return (
-    <div className="section-shell py-12">
-      <h1 className="section-title">{el.statistics.title}</h1>
+    <div className="section-shell page-stack">
+      <h1 className="page-title">{el.statistics.title}</h1>
       <p className="section-subtitle">{el.statistics.subtitle}</p>
-      <div className="mt-10">
+      <div className="mt-6">
         <PerformanceOverview metrics={metrics} />
       </div>
       {byMarket.size ? (
-        <div className="mt-10 grid gap-4 md:grid-cols-2">
+        <div className="mt-5 grid gap-2.5 md:grid-cols-2">
           {[...byMarket.entries()].map(([market, rows]) => {
             const m = calculatePerformance(rows);
             return (
-              <div key={market} className="surface-card p-5">
-                <h2 className="font-[family-name:var(--font-display)] text-lg">
+              <div key={market} className="surface-card p-3.5">
+                <h2 className="font-[family-name:var(--font-display)] text-base">
                   {marketLabels[market] || market.replaceAll("_", " ")}
                 </h2>
-                <p className="mt-2 text-sm text-[var(--text-muted)]">
+                <p className="mt-1.5 text-sm text-[var(--text-muted)]">
                   {m.totalPublished} {el.predictions.publishedCount} ·{" "}
                   {el.performance.hitRate}{" "}
                   {m.hitRate == null ? "—" : `${m.hitRate.toFixed(1)}%`}

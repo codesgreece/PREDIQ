@@ -11,14 +11,14 @@ function Metric({
   hint?: string;
 }) {
   return (
-    <div className="surface-card p-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+    <div className="surface-card p-3.5 md:p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
         {label}
       </p>
-      <p className="mt-3 font-[family-name:var(--font-display)] text-3xl tracking-tight text-[var(--text)]">
+      <p className="mt-1.5 font-[family-name:var(--font-display)] text-2xl tracking-tight text-[var(--text)]">
         {value}
       </p>
-      {hint ? <p className="mt-2 text-xs text-[var(--text-muted)]">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p> : null}
     </div>
   );
 }
@@ -32,20 +32,20 @@ export function PerformanceOverview({
 }) {
   if (metrics.totalPublished === 0) {
     return (
-      <section className="surface-card border-dashed p-8 text-center md:p-10">
-        <h2 className="section-title text-2xl md:text-3xl">{title}</h2>
-        <p className="section-subtitle mx-auto">{el.performance.empty}</p>
+      <section className="empty-state">
+        <h2 className="section-title mb-1">{title}</h2>
+        <p>{el.performance.empty}</p>
       </section>
     );
   }
 
   return (
     <section>
-      <div className="mb-6">
+      <div className="mb-3">
         <h2 className="section-title">{title}</h2>
         <p className="section-subtitle">{el.performance.subtitle}</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
         <Metric label={el.performance.settled} value={String(metrics.settled)} />
         <Metric label={el.performance.won} value={String(metrics.won)} />
         <Metric label={el.performance.lost} value={String(metrics.lost)} />

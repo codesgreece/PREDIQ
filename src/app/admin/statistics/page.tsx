@@ -16,9 +16,7 @@ export default async function AdminStatisticsPage() {
   });
   return (
     <div>
-      <h1 className="mb-8 font-[family-name:var(--font-display)] text-3xl">
-        Statistics
-      </h1>
+      <h1 className="page-title mb-4">Στατιστικά</h1>
       <PerformanceOverview metrics={calculatePerformance(published)} />
     </div>
   );

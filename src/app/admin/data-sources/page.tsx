@@ -58,31 +58,22 @@ export default function DataSourcesPage() {
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">
-        Data sources
-      </h1>
-      <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">
-        PREDIQ uses an adapter layer for sports data. The default adapter is
-        API-Football (api-sports.io). Set <code>API_FOOTBALL_KEY</code> to enable
-        synchronization. Coverage, logo licensing, and commercial terms are
-        defined by the provider — not claimed as worldwide completeness by PREDIQ.
+      <h1 className="page-title">Πηγές δεδομένων</h1>
+      <p className="section-subtitle">
+        Adapter για sports data (API-Football). Απαιτείται{" "}
+        <code>API_FOOTBALL_KEY</code>. Άδειες λογοτύπων ορίζονται από τον πάροχο.
       </p>
-      <div className="mt-6">
+      <div className="mt-4">
         <Button onClick={runSync} disabled={loading || !csrfToken}>
-          {loading ? "Syncing…" : "Run catalog sync (limited sample)"}
+          {loading ? "Συγχρονισμός…" : "Εκτέλεση συγχρονισμού"}
         </Button>
       </div>
       {result ? (
-        <p className="mt-4 whitespace-pre-wrap text-sm text-[var(--neon)]">
-          {result}
-        </p>
+        <p className="mt-3 whitespace-pre-wrap text-sm text-[var(--neon)]">{result}</p>
       ) : null}
-      <div className="mt-8 space-y-3">
+      <div className="mt-4 space-y-2">
         {jobs.map((job) => (
-          <div
-            key={job.id}
-            className="rounded-xl border border-[var(--border)] p-4 text-sm"
-          >
+          <div key={job.id} className="admin-panel text-sm">
             <p>
               {job.provider.name} · {job.status}
             </p>
@@ -91,12 +82,12 @@ export default function DataSourcesPage() {
               Missing logos {job.logosMissing}
             </p>
             {job.errorsJson ? (
-              <p className="mt-2 text-xs text-amber-300">{job.errorsJson}</p>
+              <p className="mt-1 text-xs text-amber-300">{job.errorsJson}</p>
             ) : null}
           </div>
         ))}
         {!jobs.length ? (
-          <p className="text-[var(--text-muted)]">No sync jobs yet.</p>
+          <p className="text-sm text-[var(--text-muted)]">Δεν υπάρχουν εργασίες ακόμη.</p>
         ) : null}
       </div>
     </div>

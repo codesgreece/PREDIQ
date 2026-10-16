@@ -14,15 +14,15 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-white/5 bg-[#0a1210]">
-      <div className="section-shell grid gap-10 py-12 md:grid-cols-[1.25fr_1fr] md:py-14">
+    <footer className="mt-8 border-t border-[var(--border)] bg-[var(--bg)]">
+      <div className="section-shell grid gap-6 py-8 md:grid-cols-[1.2fr_1fr]">
         <div>
-          <PrediqLogo showTagline />
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-[var(--text-muted)]">
+          <PrediqLogo showTagline size="sm" />
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--text-muted)]">
             {el.footer.blurb}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           {footerLinks.map((link) => (
             <Link
               key={link.href}
@@ -34,7 +34,7 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="border-t border-white/5 py-4 text-center text-xs text-[var(--text-muted)]">
+      <div className="border-t border-[var(--border)] py-3 text-center text-xs text-[var(--text-muted)]">
         © {new Date().getFullYear()} PREDIQ. {el.footer.copyright}
       </div>
     </footer>

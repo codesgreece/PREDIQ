@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { format } from "date-fns";
+import { el as elLocale } from "date-fns/locale";
 import { StatusBadge } from "@/components/predictions/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/db";
+import { el } from "@/lib/i18n/el";
 
 export const dynamic = "force-dynamic";
 
@@ -19,31 +21,26 @@ export default async function AdminPredictionsPage() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl">
-          Predictions
-        </h1>
-        <Link
-          href="/admin/predictions/new"
-          className="rounded-md bg-[var(--neon)] px-4 py-2 text-sm font-semibold text-[#04140f]"
-        >
-          Create prediction
+        <h1 className="page-title">{el.admin.predictions}</h1>
+        <Link href="/admin/predictions/new" className="btn-primary">
+          {el.admin.createPrediction}
         </Link>
       </div>
-      <div className="mt-8 overflow-x-auto rounded-xl border border-[var(--border)]">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-white/5 text-xs uppercase tracking-[0.12em] text-[var(--text-muted)]">
+      <div className="mt-4 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border)]">
+        <table className="data-table min-w-[640px]">
+          <thead>
             <tr>
-              <th className="px-4 py-3">Match</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Result</th>
-              <th className="px-4 py-3">Updated</th>
-              <th className="px-4 py-3"></th>
+              <th>{el.admin.match}</th>
+              <th>{el.admin.status}</th>
+              <th>{el.admin.result}</th>
+              <th>{el.admin.updated}</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {items.map((p) => (
-              <tr key={p.id} className="border-t border-white/5">
-                <td className="px-4 py-3">
+              <tr key={p.id}>
+                <td>
                   <div className="font-medium">
                     {p.match.homeTeam.name} vs {p.match.awayTeam.name}
                   </div>
@@ -51,7 +48,7 @@ export default async function AdminPredictionsPage() {
                     {p.competition.name} · {p.marketLabel}
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                <td>
                   <Badge
                     tone={
                       p.publicationStatus === "PUBLISHED" ? "neon" : "neutral"
@@ -60,21 +57,23 @@ export default async function AdminPredictionsPage() {
                     {p.publicationStatus}
                   </Badge>
                   {p.isFeatured ? (
-                    <span className="ml-2 text-xs text-[var(--neon)]">Featured</span>
+                    <span className="ml-1.5 text-xs text-[var(--neon)]">
+                      {el.admin.featured}
+                    </span>
                   ) : null}
                 </td>
-                <td className="px-4 py-3">
+                <td>
                   <StatusBadge status={p.settlementStatus} />
                 </td>
-                <td className="px-4 py-3 text-[var(--text-muted)]">
-                  {format(p.updatedAt, "dd MMM yyyy")}
+                <td className="text-[var(--text-muted)]">
+                  {format(p.updatedAt, "d MMM yyyy", { locale: elLocale })}
                 </td>
-                <td className="px-4 py-3">
+                <td>
                   <Link
                     href={`/admin/predictions/${p.id}`}
                     className="text-[var(--neon)]"
                   >
-                    Edit
+                    {el.admin.edit}
                   </Link>
                 </td>
               </tr>
@@ -82,7 +81,9 @@ export default async function AdminPredictionsPage() {
           </tbody>
         </table>
         {!items.length ? (
-          <p className="p-6 text-[var(--text-muted)]">No predictions yet.</p>
+          <p className="p-4 text-sm text-[var(--text-muted)]">
+            {el.admin.noPredictions}
+          </p>
         ) : null}
       </div>
     </div>

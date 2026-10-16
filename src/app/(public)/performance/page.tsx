@@ -73,16 +73,12 @@ export default async function PerformancePage({
   const metrics = calculatePerformance(allForMetrics);
 
   return (
-    <div className="section-shell py-12">
-      <h1 className="section-title">{el.performance.historyTitle}</h1>
+    <div className="section-shell page-stack">
+      <h1 className="page-title">{el.performance.historyTitle}</h1>
       <p className="section-subtitle">{el.performance.historySubtitle}</p>
 
-      <form className="mt-8 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)]/60 p-4 md:grid-cols-3 lg:grid-cols-6">
-        <select
-          name="sport"
-          defaultValue={filters.sport || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+      <form className="filter-bar mt-5 md:grid-cols-3 lg:grid-cols-6">
+        <select name="sport" defaultValue={filters.sport || ""} className="control">
           <option value="">{el.performance.sport}</option>
           {sports.map((s) => (
             <option key={s.id} value={s.slug}>
@@ -93,7 +89,7 @@ export default async function PerformancePage({
         <select
           name="competition"
           defaultValue={filters.competition || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         >
           <option value="">{el.performance.competition}</option>
           {competitions.map((c) => (
@@ -102,11 +98,7 @@ export default async function PerformancePage({
             </option>
           ))}
         </select>
-        <select
-          name="market"
-          defaultValue={filters.market || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="market" defaultValue={filters.market || ""} className="control">
           <option value="">{el.performance.market}</option>
           <option value="MATCH_RESULT_1X2">{el.markets.MATCH_RESULT_1X2}</option>
           <option value="OVER_UNDER">{el.markets.OVER_UNDER}</option>
@@ -114,11 +106,7 @@ export default async function PerformancePage({
           <option value="DOUBLE_CHANCE">{el.markets.DOUBLE_CHANCE}</option>
           <option value="DRAW_NO_BET">{el.markets.DRAW_NO_BET}</option>
         </select>
-        <select
-          name="status"
-          defaultValue={filters.status || ""}
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
-        >
+        <select name="status" defaultValue={filters.status || ""} className="control">
           <option value="">{el.performance.result}</option>
           <option value="WON">{el.status.WON}</option>
           <option value="LOST">{el.status.LOST}</option>
@@ -132,29 +120,22 @@ export default async function PerformancePage({
           defaultValue={
             filters.from ? filters.from.toISOString().slice(0, 10) : ""
           }
-          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="control"
         />
-        <button className="h-11 rounded-xl bg-[var(--neon)] text-sm font-semibold text-[#04140f]">
-          {el.performance.filter}
-        </button>
+        <button className="btn-primary">{el.performance.filter}</button>
       </form>
 
-      <div className="mt-10">
-        <PerformanceOverview
-          metrics={metrics}
-          title={el.performance.recorded}
-        />
+      <div className="mt-6">
+        <PerformanceOverview metrics={metrics} title={el.performance.recorded} />
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
+      <div className="mt-6 grid gap-3 md:grid-cols-2">
         {listed.items.map((p) => (
           <PredictionCard key={p.id} prediction={p} />
         ))}
       </div>
       {!listed.items.length ? (
-        <div className="surface-card mt-8 border-dashed p-10 text-center text-[var(--text-muted)]">
-          {el.performance.emptyPeriod}
-        </div>
+        <div className="empty-state mt-5">{el.performance.emptyPeriod}</div>
       ) : null}
     </div>
   );

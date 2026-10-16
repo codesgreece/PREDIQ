@@ -20,7 +20,6 @@ export function LoginForm({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Server Components cannot set cookies during render; mirror the signed CSRF cookie client-side.
     document.cookie = `prediq_csrf=${csrfSigned}; Path=/; SameSite=Lax`;
   }, [csrfSigned]);
 
@@ -54,25 +53,18 @@ export function LoginForm({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="glass w-full max-w-md rounded-2xl p-8">
-        <PrediqLogo showTagline />
-        <h1 className="mt-8 font-[family-name:var(--font-display)] text-2xl">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="glass w-full max-w-sm rounded-[var(--radius-lg)] p-5 md:p-6">
+        <PrediqLogo showTagline size="sm" />
+        <h1 className="mt-5 font-[family-name:var(--font-display)] text-xl">
           Σύνδεση διαχειριστή
         </h1>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Η δημόσια εγγραφή είναι απενεργοποιημένη. Χρησιμοποιήστε τον λογαριασμό bootstrap.
+        <p className="mt-1.5 text-sm text-[var(--text-muted)]">
+          Η δημόσια εγγραφή είναι απενεργοποιημένη.
         </p>
-        <form
-          onSubmit={onSubmit}
-          action="/api/auth/login"
-          method="post"
-          className="mt-6 space-y-4"
-        >
+        <form onSubmit={onSubmit} className="mt-5 space-y-3">
           <div>
-            <label className="mb-1 block text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
-              Email
-            </label>
+            <label className="field-label">Email</label>
             <Input
               type="email"
               name="email"
@@ -83,9 +75,7 @@ export function LoginForm({
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
-              Κωδικός
-            </label>
+            <label className="field-label">Κωδικός</label>
             <Input
               type="password"
               name="password"
@@ -95,7 +85,7 @@ export function LoginForm({
               required
             />
           </div>
-          {error ? <p className="text-sm text-red-300">{error}</p> : null}
+          {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Σύνδεση…" : "Σύνδεση"}
           </Button>

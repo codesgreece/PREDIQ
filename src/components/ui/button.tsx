@@ -3,24 +3,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--neon)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[var(--radius)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--neon)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-[var(--neon)] text-[#04140f] hover:bg-[var(--teal)] hover:text-[#04140f]",
+          "bg-[var(--neon)] text-[#04140f] hover:bg-[var(--teal)]",
         secondary:
-          "bg-[var(--card)] text-[var(--text)] border border-[var(--border)] hover:border-[var(--neon)]",
+          "bg-[var(--card-elevated)] text-[var(--text)] border border-[var(--border)] hover:border-[var(--border-strong)]",
         ghost: "hover:bg-white/5 text-[var(--text)]",
-        danger: "bg-red-600/90 text-white hover:bg-red-500",
+        danger: "bg-[var(--danger)]/90 text-white hover:bg-[var(--danger)]",
         outline:
           "border border-[var(--neon)]/40 text-[var(--neon)] hover:bg-[var(--neon)]/10",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-md px-8 text-base",
-        icon: "h-10 w-10",
+        default: "h-[var(--btn-h)] px-3.5",
+        sm: "h-8 rounded-[var(--radius-sm)] px-2.5 text-xs",
+        lg: "h-11 px-5",
+        icon: "h-[var(--btn-h)] w-[var(--btn-h)]",
       },
     },
     defaultVariants: {

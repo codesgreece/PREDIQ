@@ -300,19 +300,23 @@ export function PredictionForm({
     );
   }
 
+  const selectClass = "control mt-1 w-full";
+
   return (
-    <form onSubmit={saveDraft} className="space-y-8">
-      <section className="grid gap-4 rounded-xl border border-[var(--border)] p-5 md:grid-cols-2">
-        <h2 className="md:col-span-2 text-lg">1–5. Match selection</h2>
+    <form onSubmit={saveDraft} className="space-y-4">
+      <section className="admin-panel grid gap-3 md:grid-cols-2">
+        <h2 className="font-[family-name:var(--font-display)] text-base md:col-span-2">
+          1–5. Επιλογή αγώνα
+        </h2>
         <label className="text-sm">
-          Sport
+          <span className="field-label">Άθλημα</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={sportId}
             onChange={(e) => setSportId(e.target.value)}
             required
           >
-            <option value="">Select sport</option>
+            <option value="">Επιλογή</option>
             {(catalog?.sports || []).map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -321,14 +325,14 @@ export function PredictionForm({
           </select>
         </label>
         <label className="text-sm">
-          Competition
+          <span className="field-label">Διοργάνωση</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={competitionId}
             onChange={(e) => setCompetitionId(e.target.value)}
             required
           >
-            <option value="">Select competition</option>
+            <option value="">Επιλογή</option>
             {competitions.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -337,13 +341,13 @@ export function PredictionForm({
           </select>
         </label>
         <label className="text-sm">
-          Season (optional)
+          <span className="field-label">Σεζόν (προαιρετικά)</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={seasonId}
             onChange={(e) => setSeasonId(e.target.value)}
           >
-            <option value="">No season</option>
+            <option value="">Χωρίς σεζόν</option>
             {seasons.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -352,14 +356,14 @@ export function PredictionForm({
           </select>
         </label>
         <label className="text-sm">
-          Existing match
+          <span className="field-label">Υπάρχων αγώνας</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={matchId}
             onChange={(e) => setMatchId(e.target.value)}
             required
           >
-            <option value="">Select match</option>
+            <option value="">Επιλογή</option>
             {matches.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.homeTeam.name} vs {m.awayTeam.name}
@@ -368,13 +372,13 @@ export function PredictionForm({
           </select>
         </label>
         <label className="text-sm">
-          Or create match — home team
+          <span className="field-label">Νέος αγώνας — γηπεδούχος</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={homeTeamId}
             onChange={(e) => setHomeTeamId(e.target.value)}
           >
-            <option value="">Home team</option>
+            <option value="">Γηπεδούχος</option>
             {teams.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
@@ -383,13 +387,13 @@ export function PredictionForm({
           </select>
         </label>
         <label className="text-sm">
-          Away team
+          <span className="field-label">Φιλοξενούμενος</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={awayTeamId}
             onChange={(e) => setAwayTeamId(e.target.value)}
           >
-            <option value="">Away team</option>
+            <option value="">Φιλοξενούμενος</option>
             {teams.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
@@ -398,22 +402,24 @@ export function PredictionForm({
           </select>
         </label>
         <div className="md:col-span-2">
-          <Button type="button" variant="secondary" onClick={createMatch}>
-            Create match record
+          <Button type="button" variant="secondary" size="sm" onClick={createMatch}>
+            Δημιουργία αγώνα
           </Button>
         </div>
       </section>
 
-      <section className="grid gap-4 rounded-xl border border-[var(--border)] p-5 md:grid-cols-2">
-        <h2 className="md:col-span-2 text-lg">6–8. Market & odds</h2>
+      <section className="admin-panel grid gap-3 md:grid-cols-2">
+        <h2 className="font-[family-name:var(--font-display)] text-base md:col-span-2">
+          6–8. Αγορά & αποδόσεις
+        </h2>
         <label className="text-sm md:col-span-2">
-          Title
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <span className="field-label">Τίτλος</span>
+          <Input className="mt-1" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </label>
         <label className="text-sm">
-          Market type
+          <span className="field-label">Τύπος αγοράς</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className={selectClass}
             value={marketType}
             onChange={(e) => setMarketType(e.target.value)}
           >
@@ -422,100 +428,87 @@ export function PredictionForm({
             <option value="OVER_UNDER">Over/Under</option>
             <option value="BOTH_TEAMS_TO_SCORE">BTTS</option>
             <option value="DRAW_NO_BET">Draw no bet</option>
-            <option value="OTHER">Other (manual settlement)</option>
+            <option value="OTHER">Other</option>
           </select>
         </label>
         <label className="text-sm">
-          Market label
-          <Input value={marketLabel} onChange={(e) => setMarketLabel(e.target.value)} required />
+          <span className="field-label">Ετικέτα αγοράς</span>
+          <Input className="mt-1" value={marketLabel} onChange={(e) => setMarketLabel(e.target.value)} required />
         </label>
         <label className="text-sm">
-          Selection
-          <Input value={selection} onChange={(e) => setSelection(e.target.value)} required />
+          <span className="field-label">Επιλογή</span>
+          <Input className="mt-1" value={selection} onChange={(e) => setSelection(e.target.value)} required />
         </label>
         <label className="text-sm">
-          Selection detail (e.g. 2.5 for O/U)
-          <Input
-            value={selectionDetail}
-            onChange={(e) => setSelectionDetail(e.target.value)}
-          />
+          <span className="field-label">Λεπτομέρεια (π.χ. 2.5)</span>
+          <Input className="mt-1" value={selectionDetail} onChange={(e) => setSelectionDetail(e.target.value)} />
         </label>
         <label className="text-sm">
-          Odds at publication
-          <Input value={odds} onChange={(e) => setOdds(e.target.value)} />
+          <span className="field-label">Απόδοση</span>
+          <Input className="mt-1" value={odds} onChange={(e) => setOdds(e.target.value)} />
         </label>
         <label className="text-sm">
-          Stake (for ROI)
-          <Input value={stake} onChange={(e) => setStake(e.target.value)} />
+          <span className="field-label">Stake (ROI)</span>
+          <Input className="mt-1" value={stake} onChange={(e) => setStake(e.target.value)} />
         </label>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-[var(--border)] p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg">9. Analysis editor</h2>
-          <Button type="button" variant="outline" onClick={generateResearch}>
-            AI-assisted research draft
+      <section className="admin-panel space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-[family-name:var(--font-display)] text-base">
+            9. Επεξεργαστής ανάλυσης
+          </h2>
+          <Button type="button" variant="outline" size="sm" onClick={generateResearch}>
+            AI research draft
           </Button>
         </div>
         {researchNote ? (
-          <p className="text-sm text-[var(--text-muted)]">{researchNote}</p>
+          <p className="text-xs text-[var(--text-muted)]">{researchNote}</p>
         ) : null}
-        <Textarea value={analysisOverview} onChange={(e) => setAnalysisOverview(e.target.value)} placeholder="Match overview" />
-        <Textarea value={recentForm} onChange={(e) => setRecentForm(e.target.value)} placeholder="Recent form" />
-        <Textarea value={headToHead} onChange={(e) => setHeadToHead(e.target.value)} placeholder="Head-to-head" />
-        <Textarea value={homeAwayStats} onChange={(e) => setHomeAwayStats(e.target.value)} placeholder="Home/away statistics" />
-        <Textarea value={injuries} onChange={(e) => setInjuries(e.target.value)} placeholder="Injuries and suspensions" />
-        <Textarea value={lineups} onChange={(e) => setLineups(e.target.value)} placeholder="Expected lineups (only with sources)" />
-        <Textarea value={tactical} onChange={(e) => setTactical(e.target.value)} placeholder="Tactical analysis" />
-        <Textarea value={psychological} onChange={(e) => setPsychological(e.target.value)} placeholder="Psychological context" />
-        <Textarea value={statistical} onChange={(e) => setStatistical(e.target.value)} placeholder="Statistical assessment" />
-        <Textarea value={rationale} onChange={(e) => setRationale(e.target.value)} placeholder="Prediction rationale" />
-        <Textarea value={counterarguments} onChange={(e) => setCounterarguments(e.target.value)} placeholder="Counterarguments" />
-        <div className="grid gap-4 md:grid-cols-2">
-          <Input
-            value={confidenceLevel}
-            onChange={(e) => setConfidenceLevel(e.target.value)}
-            placeholder="Confidence methodology label"
-          />
-          <Input
-            value={confidenceNote}
-            onChange={(e) => setConfidenceNote(e.target.value)}
-            placeholder="Confidence note (not a calibrated probability)"
-          />
+        <div className="grid gap-2.5 md:grid-cols-2">
+          <Textarea value={analysisOverview} onChange={(e) => setAnalysisOverview(e.target.value)} placeholder="Επισκόπηση αγώνα" />
+          <Textarea value={recentForm} onChange={(e) => setRecentForm(e.target.value)} placeholder="Πρόσφατη φόρμα" />
+          <Textarea value={headToHead} onChange={(e) => setHeadToHead(e.target.value)} placeholder="Ιστορικό αναμετρήσεων" />
+          <Textarea value={homeAwayStats} onChange={(e) => setHomeAwayStats(e.target.value)} placeholder="Εντός / εκτός" />
+          <Textarea value={injuries} onChange={(e) => setInjuries(e.target.value)} placeholder="Τραυματισμοί" />
+          <Textarea value={lineups} onChange={(e) => setLineups(e.target.value)} placeholder="Ενδεκάδες" />
+          <Textarea value={tactical} onChange={(e) => setTactical(e.target.value)} placeholder="Τακτική" />
+          <Textarea value={psychological} onChange={(e) => setPsychological(e.target.value)} placeholder="Ψυχολογικό πλαίσιο" />
+          <Textarea value={statistical} onChange={(e) => setStatistical(e.target.value)} placeholder="Στατιστική αξιολόγηση" />
+          <Textarea value={rationale} onChange={(e) => setRationale(e.target.value)} placeholder="Αιτιολόγηση" />
+          <Textarea className="md:col-span-2" value={counterarguments} onChange={(e) => setCounterarguments(e.target.value)} placeholder="Αντεπιχειρήματα" />
+        </div>
+        <div className="grid gap-2.5 md:grid-cols-2">
+          <Input value={confidenceLevel} onChange={(e) => setConfidenceLevel(e.target.value)} placeholder="Confidence label" />
+          <Input value={confidenceNote} onChange={(e) => setConfidenceNote(e.target.value)} placeholder="Confidence note" />
         </div>
       </section>
 
-      <section className="grid gap-4 rounded-xl border border-[var(--border)] p-5 md:grid-cols-2">
-        <h2 className="md:col-span-2 text-lg">10. Sources</h2>
-        <Input
-          value={sourceTitle}
-          onChange={(e) => setSourceTitle(e.target.value)}
-          placeholder="Source title"
-        />
-        <Input
-          value={sourceUrl}
-          onChange={(e) => setSourceUrl(e.target.value)}
-          placeholder="https://..."
-        />
+      <section className="admin-panel grid gap-3 md:grid-cols-2">
+        <h2 className="font-[family-name:var(--font-display)] text-base md:col-span-2">
+          10. Πηγές
+        </h2>
+        <Input value={sourceTitle} onChange={(e) => setSourceTitle(e.target.value)} placeholder="Τίτλος πηγής" />
+        <Input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://..." />
       </section>
 
-      {error ? <p className="text-sm text-red-300">{error}</p> : null}
+      {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
       {message ? <p className="text-sm text-[var(--neon)]">{message}</p> : null}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save draft"}
+          {saving ? "Αποθήκευση…" : "Αποθήκευση πρόχειρου"}
         </Button>
         {initial ? (
           <>
             <Button type="button" variant="outline" onClick={() => runAction("publish")}>
-              Publish
+              Δημοσίευση
             </Button>
             <Button type="button" variant="secondary" onClick={() => runAction("unpublish")}>
-              Unpublish
+              Απόσυρση
             </Button>
             <Button type="button" variant="secondary" onClick={() => runAction("archive")}>
-              Archive
+              Αρχειοθέτηση
             </Button>
             <Button
               type="button"
@@ -524,20 +517,20 @@ export function PredictionForm({
                 runAction("feature", { featured: !initial.isFeatured })
               }
             >
-              {initial.isFeatured ? "Unfeature" : "Feature"}
+              {initial.isFeatured ? "Αφαίρεση επιλογής" : "Επιλεγμένο"}
             </Button>
             {initial.publicationStatus === "PUBLISHED" ? (
               <a
                 href={`/predictions/${initial.slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-10 items-center text-sm text-[var(--neon)]"
+                className="inline-flex h-[var(--btn-h)] items-center text-sm text-[var(--neon)]"
               >
-                Preview public page
+                Προεπισκόπηση
               </a>
             ) : (
-              <span className="inline-flex h-10 items-center text-sm text-[var(--text-muted)]">
-                Preview available after publish
+              <span className="inline-flex h-[var(--btn-h)] items-center text-sm text-[var(--text-muted)]">
+                Προεπισκόπηση μετά τη δημοσίευση
               </span>
             )}
           </>

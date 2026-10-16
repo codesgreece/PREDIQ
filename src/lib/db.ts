@@ -5,10 +5,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function resolveDatabaseUrl(): string | undefined {
-  // Neon on Vercel often provides a Prisma-tuned pooled URL.
+  // Prefer the app DATABASE_URL so local/test overrides win over Neon-injected
+  // POSTGRES_* variables that may also be present in the environment.
   return (
-    process.env.POSTGRES_PRISMA_URL ||
     process.env.DATABASE_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
     process.env.POSTGRES_URL
   );
 }

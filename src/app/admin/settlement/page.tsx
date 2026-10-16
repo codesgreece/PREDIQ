@@ -64,36 +64,31 @@ export default function SettlementPage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error || "Settlement failed");
+      setError(data.error || "Η διευθέτηση απέτυχε");
       return;
     }
-    setMessage(`Settled as ${data.prediction.settlementStatus}`);
+    setMessage(`Διευθετήθηκε ως ${data.prediction.settlementStatus}`);
     await load();
   }
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">
-        Results & settlement
-      </h1>
-      <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">
-        A finished match does not automatically settle a prediction. Use market
-        rules or an explicit status. Changing settled results requires notes.
+      <h1 className="page-title">Αποτελέσματα & διευθέτηση</h1>
+      <p className="section-subtitle">
+        Ολοκληρωμένος αγώνας δεν διευθετεί αυτόματα το προγνωστικό. Χρησιμοποιήστε
+        κανόνες αγοράς ή ρητή κατάσταση. Οι αλλαγές απαιτούν σημειώσεις.
       </p>
 
-      <form
-        onSubmit={onSubmit}
-        className="mt-8 max-w-xl space-y-4 rounded-xl border border-[var(--border)] p-5"
-      >
+      <form onSubmit={onSubmit} className="admin-panel mt-4 max-w-xl space-y-3">
         <label className="block text-sm">
-          Published prediction
+          <span className="field-label">Δημοσιευμένο προγνωστικό</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className="control mt-1 w-full"
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
             required
           >
-            <option value="">Select</option>
+            <option value="">Επιλογή</option>
             {items.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.match.homeTeam.name} vs {item.match.awayTeam.name} ·{" "}
@@ -102,45 +97,45 @@ export default function SettlementPage() {
             ))}
           </select>
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2.5">
           <Input
-            placeholder="Final home score"
+            placeholder="Τελικό σκορ γηπεδούχου"
             value={home}
             onChange={(e) => setHome(e.target.value)}
           />
           <Input
-            placeholder="Final away score"
+            placeholder="Τελικό σκορ φιλοξενούμενου"
             value={away}
             onChange={(e) => setAway(e.target.value)}
           />
         </div>
         <Input
-          placeholder="Verification source"
+          placeholder="Πηγή επαλήθευσης"
           value={source}
           onChange={(e) => setSource(e.target.value)}
         />
         <Textarea
-          placeholder="Settlement notes"
+          placeholder="Σημειώσεις διευθέτησης"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
         <label className="block text-sm">
-          Explicit status override (optional; required for OTHER markets)
+          <span className="field-label">Χειροκίνητη κατάσταση (προαιρετικά)</span>
           <select
-            className="mt-1 h-10 w-full rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3"
+            className="control mt-1 w-full"
             value={manualStatus}
             onChange={(e) => setManualStatus(e.target.value)}
           >
-            <option value="">Use automatic market rules</option>
+            <option value="">Αυτόματοι κανόνες αγοράς</option>
             <option value="WON">WON</option>
             <option value="LOST">LOST</option>
             <option value="VOID">VOID</option>
             <option value="PENDING">PENDING</option>
           </select>
         </label>
-        {error ? <p className="text-sm text-red-300">{error}</p> : null}
+        {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
         {message ? <p className="text-sm text-[var(--neon)]">{message}</p> : null}
-        <Button type="submit">Settle prediction</Button>
+        <Button type="submit">Διευθέτηση</Button>
       </form>
     </div>
   );

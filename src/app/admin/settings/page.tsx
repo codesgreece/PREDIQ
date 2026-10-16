@@ -6,12 +6,10 @@ export default async function AdminSettingsPage() {
   const settings = await prisma.siteSettings.findUnique({ where: { id: "default" } });
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">
-        Settings
-      </h1>
-      <div className="mt-6 max-w-2xl space-y-4 rounded-xl border border-[var(--border)] p-5 text-sm">
+      <h1 className="page-title">Ρυθμίσεις</h1>
+      <div className="admin-panel mt-4 max-w-xl space-y-2.5 text-sm">
         <p>
-          <span className="text-[var(--text-muted)]">Site name:</span>{" "}
+          <span className="text-[var(--text-muted)]">Όνομα:</span>{" "}
           {settings?.siteName || "PREDIQ"}
         </p>
         <p>
@@ -19,16 +17,16 @@ export default async function AdminSettingsPage() {
           {settings?.tagline || "AI SPORTS PREDICTIONS"}
         </p>
         <p>
-          <span className="text-[var(--text-muted)]">Contact:</span>{" "}
-          {settings?.contactEmail || "Not set"}
+          <span className="text-[var(--text-muted)]">Επικοινωνία:</span>{" "}
+          {settings?.contactEmail || "Δεν έχει οριστεί"}
         </p>
         <p>
           <span className="text-[var(--text-muted)]">Featured prediction id:</span>{" "}
-          {settings?.featuredPredictionId || "None"}
+          {settings?.featuredPredictionId || "Κανένα"}
         </p>
         <p className="text-[var(--text-muted)]">
-          Environment secrets are managed via <code>.env</code>. Public
-          registration remains disabled by design.
+          Τα secrets διαχειρίζονται μέσω <code>.env</code>. Η δημόσια εγγραφή
+          παραμένει απενεργοποιημένη.
         </p>
       </div>
     </div>

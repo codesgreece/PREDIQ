@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { getSessionUser } from "@/lib/auth/session";
+import { el } from "@/lib/i18n/el";
 
 export const metadata = {
   robots: { index: false, follow: false },
@@ -15,17 +16,17 @@ export default async function AdminLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="flex min-h-screen bg-[#080D0C]">
-      <div className="hidden md:block">
+    <div className="admin-shell flex">
+      <div className="sticky top-0 hidden h-screen md:block">
         <AdminSidebar />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="border-b border-white/5 px-4 py-3 md:hidden">
-          <AdminSidebar />
+        <div className="border-b border-[var(--border)] px-3 py-2.5 md:hidden">
+          <AdminSidebar compact />
         </div>
-        <div className="flex-1 px-4 py-6 md:px-8">
-          <p className="mb-4 text-xs text-[var(--text-muted)]">
-            Signed in as {user.email}
+        <div className="flex-1 px-3 py-4 md:px-5 md:py-5">
+          <p className="mb-3 text-xs text-[var(--text-muted)]">
+            {el.admin.signedInAs} {user.email}
           </p>
           {children}
         </div>

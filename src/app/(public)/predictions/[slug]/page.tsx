@@ -26,23 +26,23 @@ function Section({
   if (!show) return null;
   if (!body?.trim()) {
     return (
-      <section className="surface-card border-dashed p-5 md:p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--text)]">
+      <section className="surface-card border-dashed p-3.5 md:p-4">
+        <h2 className="font-[family-name:var(--font-display)] text-base text-[var(--text)]">
           {title}
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
           {unverifiedHint || el.analysis.missing}
         </p>
       </section>
     );
   }
   return (
-    <section className="surface-card p-5 md:p-6">
-      <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--text)]">
+    <section className="surface-card p-3.5 md:p-4">
+      <h2 className="font-[family-name:var(--font-display)] text-base text-[var(--text)]">
         {title}
       </h2>
       <div
-        className="prose prose-invert mt-4 max-w-none text-sm leading-relaxed text-[var(--text-muted)]"
+        className="prose prose-invert mt-2.5 max-w-none text-sm leading-relaxed text-[var(--text-muted)]"
         dangerouslySetInnerHTML={{
           __html: sanitizeHtml(plainTextToHtml(body)),
         }}
@@ -53,11 +53,11 @@ function Section({
 
 function MetaCell({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-black/20 px-4 py-3">
-      <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+    <div className="rounded-[var(--radius)] border border-[var(--border)] bg-black/15 px-3 py-2.5">
+      <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
         {label}
       </dt>
-      <dd className="mt-1.5 text-sm text-[var(--text)]">{value}</dd>
+      <dd className="mt-1 text-sm text-[var(--text)]">{value}</dd>
     </div>
   );
 }
@@ -74,9 +74,7 @@ export async function generateMetadata({
   return {
     title,
     description: `${prediction.marketLabel}: ${prediction.selection}. ${el.meta.publishedAnalysis}`,
-    alternates: {
-      canonical: `/predictions/${prediction.slug}`,
-    },
+    alternates: { canonical: `/predictions/${prediction.slug}` },
     openGraph: {
       title: `${title} · PREDIQ`,
       description: prediction.analysisOverview?.slice(0, 160) || undefined,
@@ -108,18 +106,18 @@ export default async function PredictionDetailPage({
   };
 
   return (
-    <article className="section-shell py-10 md:py-14">
+    <article className="section-shell page-stack">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-2.5 py-1 text-sm">
           <CompetitionLogo
             name={prediction.competition.name}
             logoUrl={prediction.competition.logoUrl}
-            size={22}
+            size={18}
           />
           {prediction.competition.name}
         </span>
@@ -127,40 +125,36 @@ export default async function PredictionDetailPage({
         <Badge tone="neon">{el.status.PUBLISHED}</Badge>
       </div>
 
-      <h1 className="mt-5 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-tight tracking-tight md:text-5xl">
+      <h1 className="page-title mt-3 max-w-3xl">
         {match.homeTeam.name} {el.common.vs} {match.awayTeam.name}
       </h1>
-      <p className="mt-3 max-w-2xl text-[var(--text-muted)]">{prediction.title}</p>
+      <p className="mt-1.5 text-sm text-[var(--text-muted)]">{prediction.title}</p>
 
-      <div className="glass mt-8 rounded-3xl p-5 md:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="flex min-w-0 items-center gap-3">
+      <div className="glass mt-5 rounded-[var(--radius-lg)] p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-2.5">
             <TeamLogo
               name={match.homeTeam.name}
               logoUrl={match.homeTeam.logoUrl}
-              size={56}
+              size={40}
             />
-            <span className="text-lg font-medium md:text-xl">
-              {match.homeTeam.name}
-            </span>
+            <span className="font-medium">{match.homeTeam.name}</span>
           </div>
-          <span className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
             VS
           </span>
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="text-lg font-medium md:text-xl">
-              {match.awayTeam.name}
-            </span>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="font-medium">{match.awayTeam.name}</span>
             <TeamLogo
               name={match.awayTeam.name}
               logoUrl={match.awayTeam.logoUrl}
-              size={56}
+              size={40}
             />
           </div>
         </div>
       </div>
 
-      <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         <MetaCell label={el.analysis.market} value={prediction.marketLabel} />
         <MetaCell label={el.analysis.selection} value={prediction.selection} />
         <MetaCell
@@ -194,9 +188,7 @@ export default async function PredictionDetailPage({
           value={
             <>
               {prediction.publishedAt
-                ? format(prediction.publishedAt, "d MMM yyyy", {
-                    locale: elLocale,
-                  })
+                ? format(prediction.publishedAt, "d MMM yyyy", { locale: elLocale })
                 : "—"}
               {" · "}
               {format(prediction.updatedAt, "d MMM yyyy", { locale: elLocale })}
@@ -205,27 +197,11 @@ export default async function PredictionDetailPage({
         />
       </dl>
 
-      <div className="mt-10 grid gap-4 lg:grid-cols-2">
-        <Section
-          title={el.analysis.overview}
-          body={prediction.analysisOverview}
-          show={prediction.showOverview}
-        />
-        <Section
-          title={el.analysis.recentForm}
-          body={prediction.recentForm}
-          show={prediction.showRecentForm}
-        />
-        <Section
-          title={el.analysis.headToHead}
-          body={prediction.headToHead}
-          show={prediction.showHeadToHead}
-        />
-        <Section
-          title={el.analysis.homeAway}
-          body={prediction.homeAwayStats}
-          show={prediction.showHomeAwayStats}
-        />
+      <div className="mt-5 grid gap-2.5 lg:grid-cols-2">
+        <Section title={el.analysis.overview} body={prediction.analysisOverview} show={prediction.showOverview} />
+        <Section title={el.analysis.recentForm} body={prediction.recentForm} show={prediction.showRecentForm} />
+        <Section title={el.analysis.headToHead} body={prediction.headToHead} show={prediction.showHeadToHead} />
+        <Section title={el.analysis.homeAway} body={prediction.homeAwayStats} show={prediction.showHomeAwayStats} />
         <Section
           title={el.analysis.injuries}
           body={prediction.injuriesSuspensions}
@@ -238,45 +214,29 @@ export default async function PredictionDetailPage({
           show={prediction.showLineups}
           unverifiedHint={el.analysis.lineupsMissing}
         />
-        <Section
-          title={el.analysis.tactical}
-          body={prediction.tacticalAnalysis}
-          show={prediction.showTactical}
-        />
+        <Section title={el.analysis.tactical} body={prediction.tacticalAnalysis} show={prediction.showTactical} />
         <Section
           title={el.analysis.psychological}
           body={prediction.psychologicalContext}
           show={prediction.showPsychological}
           unverifiedHint={el.analysis.psychologicalHint}
         />
-        <Section
-          title={el.analysis.statistical}
-          body={prediction.statisticalAssessment}
-          show={prediction.showStatistical}
-        />
-        <Section
-          title={el.analysis.rationale}
-          body={prediction.predictionRationale}
-          show={prediction.showRationale}
-        />
-        <Section
-          title={el.analysis.risks}
-          body={prediction.counterarguments}
-          show={prediction.showCounterarguments}
-        />
+        <Section title={el.analysis.statistical} body={prediction.statisticalAssessment} show={prediction.showStatistical} />
+        <Section title={el.analysis.rationale} body={prediction.predictionRationale} show={prediction.showRationale} />
+        <Section title={el.analysis.risks} body={prediction.counterarguments} show={prediction.showCounterarguments} />
       </div>
 
       {prediction.showSources ? (
-        <section className="surface-card mt-8 p-5 md:p-6">
-          <h2 className="font-[family-name:var(--font-display)] text-xl">
+        <section className="surface-card mt-5 p-3.5 md:p-4">
+          <h2 className="font-[family-name:var(--font-display)] text-base">
             {el.analysis.sources}
           </h2>
           {prediction.sources.length ? (
-            <ul className="mt-4 space-y-3 text-sm">
+            <ul className="mt-3 space-y-2 text-sm">
               {prediction.sources.map((s) => (
                 <li
                   key={s.id}
-                  className="rounded-xl border border-white/5 bg-black/20 px-4 py-3"
+                  className="rounded-[var(--radius)] border border-[var(--border)] bg-black/15 px-3 py-2"
                 >
                   <a
                     href={s.url}
@@ -286,11 +246,9 @@ export default async function PredictionDetailPage({
                   >
                     {s.title}
                   </a>
-                  <span className="mt-1 block text-xs text-[var(--text-muted)]">
+                  <span className="mt-0.5 block text-xs text-[var(--text-muted)]">
                     {el.analysis.retrieved}{" "}
-                    {format(s.retrievedAt, "d MMM yyyy HH:mm", {
-                      locale: elLocale,
-                    })}
+                    {format(s.retrievedAt, "d MMM yyyy HH:mm", { locale: elLocale })}
                     {" · "}
                     {s.isVerified
                       ? el.analysis.verified
@@ -300,20 +258,18 @@ export default async function PredictionDetailPage({
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-[var(--text-muted)]">
-              {el.analysis.noSources}
-            </p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">{el.analysis.noSources}</p>
           )}
         </section>
       ) : null}
 
-      <div className="mt-8 surface-card p-5 md:p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl">
+      <div className="surface-card mt-5 p-3.5 md:p-4">
+        <h2 className="font-[family-name:var(--font-display)] text-base">
           {el.analysis.selection}
         </h2>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge tone="neon">{prediction.marketLabel}</Badge>
-          <span className="rounded-lg bg-white/5 px-3 py-1.5 text-sm font-medium">
+          <span className="rounded-[var(--radius-sm)] bg-white/[0.04] px-2.5 py-1 text-sm font-medium">
             {prediction.selection}
           </span>
           {prediction.oddsAtPublication != null ? (

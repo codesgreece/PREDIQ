@@ -24,48 +24,46 @@ export default async function AdminCompetitionsPage({
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">
-        Competitions
-      </h1>
-      <form className="mt-6">
+      <h1 className="page-title">Διοργανώσεις</h1>
+      <form className="mt-4">
         <input
           name="q"
           defaultValue={q || ""}
-          placeholder="Search competitions"
-          className="h-10 w-full max-w-md rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          placeholder="Αναζήτηση διοργανώσεων"
+          className="control w-full max-w-md"
         />
       </form>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-[var(--border)]">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-white/5 text-xs uppercase tracking-[0.12em] text-[var(--text-muted)]">
+      <div className="mt-4 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border)]">
+        <table className="data-table min-w-[640px]">
+          <thead>
             <tr>
-              <th className="px-4 py-3">Competition</th>
-              <th className="px-4 py-3">Country</th>
-              <th className="px-4 py-3">Provider ID</th>
-              <th className="px-4 py-3">Logo</th>
-              <th className="px-4 py-3">Teams</th>
+              <th>Διοργάνωση</th>
+              <th>Χώρα</th>
+              <th>Provider ID</th>
+              <th>Logo</th>
+              <th>Ομάδες</th>
             </tr>
           </thead>
           <tbody>
             {items.map((c) => (
-              <tr key={c.id} className="border-t border-white/5">
-                <td className="px-4 py-3">{c.name}</td>
-                <td className="px-4 py-3 text-[var(--text-muted)]">
+              <tr key={c.id}>
+                <td>{c.name}</td>
+                <td className="text-[var(--text-muted)]">
                   {c.country?.name || "—"}
                 </td>
-                <td className="px-4 py-3 text-[var(--text-muted)]">
+                <td className="text-[var(--text-muted)]">
                   {c.provider?.key || "—"}:{c.providerRef || "—"}
                 </td>
-                <td className="px-4 py-3">
+                <td>
                   {c.logoUrl ? (
-                    <Image src={c.logoUrl} alt="" width={28} height={28} unoptimized />
+                    <Image src={c.logoUrl} alt="" width={24} height={24} unoptimized />
                   ) : (
                     <span className="text-xs text-amber-300">
                       {c.logoMissing ? "Missing" : "None"}
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3">{c._count.teams}</td>
+                <td>{c._count.teams}</td>
               </tr>
             ))}
           </tbody>

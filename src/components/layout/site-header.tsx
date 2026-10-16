@@ -21,10 +21,10 @@ export function SiteHeader({ isAdmin }: { isAdmin?: boolean }) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#080D0C]/85 backdrop-blur-xl">
-      <div className="section-shell flex items-center justify-between gap-4 py-3.5 md:py-4">
-        <PrediqLogo showTagline className="min-w-0" />
-        <nav className="hidden items-center gap-1 lg:flex">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/92 backdrop-blur-xl">
+      <div className="section-shell flex h-[var(--nav-h)] items-center justify-between gap-3">
+        <PrediqLogo showTagline className="min-w-0 max-w-[70%]" size="sm" />
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {links.map((link) => {
             const active =
               link.href === "/"
@@ -35,10 +35,10 @@ export function SiteHeader({ isAdmin }: { isAdmin?: boolean }) {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm transition-colors",
+                  "rounded-[var(--radius)] px-2.5 py-1.5 text-sm transition-colors",
                   active
                     ? "bg-[var(--neon)]/10 text-[var(--neon)]"
-                    : "text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text)]",
+                    : "text-[var(--text-muted)] hover:bg-white/[0.04] hover:text-[var(--text)]",
                 )}
               >
                 {link.label}
@@ -47,45 +47,42 @@ export function SiteHeader({ isAdmin }: { isAdmin?: boolean }) {
           })}
           <Link
             href={isAdmin ? "/admin" : "/login"}
-            className="ml-2 inline-flex h-9 items-center rounded-lg border border-[var(--neon)]/40 px-3.5 text-sm font-medium text-[var(--neon)] transition-colors hover:bg-[var(--neon)]/10"
+            className="ml-1.5 inline-flex h-8 items-center rounded-[var(--radius)] border border-[var(--neon)]/40 px-3 text-sm font-medium text-[var(--neon)] transition-colors hover:bg-[var(--neon)]/10"
           >
             {isAdmin ? el.nav.admin : el.nav.login}
           </Link>
         </nav>
         <button
-          className="rounded-lg border border-white/10 p-2.5 text-[var(--text)] lg:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius)] border border-[var(--border)] text-[var(--text)] lg:hidden"
           aria-label={open ? el.nav.closeMenu : el.nav.openMenu}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
         </button>
       </div>
-      <div
-        className={cn(
-          "border-t border-white/5 bg-[#0c1412] lg:hidden",
-          open ? "block" : "hidden",
-        )}
-      >
-        <div className="section-shell flex flex-col gap-1 py-3">
-          {links.map((link) => (
+      {open ? (
+        <div className="border-t border-[var(--border)] bg-[var(--surface)] lg:hidden">
+          <div className="section-shell flex flex-col gap-0.5 py-2">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-[var(--radius)] px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-white/[0.04] hover:text-[var(--text)]"
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
             <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-3 py-2.5 text-sm text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text)]"
+              href={isAdmin ? "/admin" : "/login"}
+              className="rounded-[var(--radius)] px-3 py-2 text-sm text-[var(--neon)]"
               onClick={() => setOpen(false)}
             >
-              {link.label}
+              {isAdmin ? el.nav.admin : el.nav.login}
             </Link>
-          ))}
-          <Link
-            href={isAdmin ? "/admin" : "/login"}
-            className="rounded-lg px-3 py-2.5 text-sm text-[var(--neon)]"
-            onClick={() => setOpen(false)}
-          >
-            {isAdmin ? el.nav.admin : el.nav.login}
-          </Link>
+          </div>
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }

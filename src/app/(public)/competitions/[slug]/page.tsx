@@ -51,36 +51,34 @@ export default async function CompetitionDetailPage({
   });
 
   return (
-    <div className="section-shell py-12">
-      <div className="flex items-center gap-4">
+    <div className="section-shell page-stack">
+      <div className="flex items-center gap-3">
         <CompetitionLogo
           name={competition.name}
           logoUrl={competition.logoUrl}
-          size={56}
+          size={44}
         />
         <div>
-          <h1 className="section-title">{competition.name}</h1>
-          <p className="mt-2 text-[var(--text-muted)]">
+          <h1 className="page-title">{competition.name}</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             {competition.country?.name || el.competitions.international} ·{" "}
             {listed.total} {el.competitions.published}
           </p>
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-[var(--text-muted)]">
+      <p className="mt-3 text-sm text-[var(--text-muted)]">
         {el.competitions.onlyPublished}
       </p>
 
       {listed.items.length ? (
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
           {listed.items.map((p) => (
             <PredictionCard key={p.id} prediction={p} />
           ))}
         </div>
       ) : (
-        <div className="surface-card mt-8 border-dashed p-10 text-center text-[var(--text-muted)]">
-          {el.competitions.noPredictions}
-        </div>
+        <div className="empty-state mt-5">{el.competitions.noPredictions}</div>
       )}
     </div>
   );

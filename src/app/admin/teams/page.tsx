@@ -26,24 +26,24 @@ export default async function AdminTeamsPage({
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">Teams</h1>
-      <form className="mt-6">
+      <h1 className="page-title">Ομάδες</h1>
+      <form className="mt-4">
         <input
           name="q"
           defaultValue={q || ""}
-          placeholder="Search teams"
-          className="h-10 w-full max-w-md rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          placeholder="Αναζήτηση ομάδων"
+          className="control w-full max-w-md"
         />
       </form>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-[var(--border)]">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-white/5 text-xs uppercase tracking-[0.12em] text-[var(--text-muted)]">
+      <div className="mt-4 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border)]">
+        <table className="data-table min-w-[640px]">
+          <thead>
             <tr>
-              <th className="px-4 py-3">Team</th>
-              <th className="px-4 py-3">Country</th>
-              <th className="px-4 py-3">Provider ID</th>
-              <th className="px-4 py-3">Logo</th>
-              <th className="px-4 py-3">Duplicate check</th>
+              <th>Ομάδα</th>
+              <th>Χώρα</th>
+              <th>Provider ID</th>
+              <th>Logo</th>
+              <th>Duplicate</th>
             </tr>
           </thead>
           <tbody>
@@ -54,26 +54,26 @@ export default async function AdminTeamsPage({
                   : "";
               const dup = key ? (refs.get(key) || 0) > 1 : false;
               return (
-                <tr key={t.id} className="border-t border-white/5">
-                  <td className="px-4 py-3">{t.name}</td>
-                  <td className="px-4 py-3 text-[var(--text-muted)]">
+                <tr key={t.id}>
+                  <td>{t.name}</td>
+                  <td className="text-[var(--text-muted)]">
                     {t.country?.name || "—"}
                   </td>
-                  <td className="px-4 py-3 text-[var(--text-muted)]">
+                  <td className="text-[var(--text-muted)]">
                     {t.provider?.key || "—"}:{t.providerRef || "—"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     {t.logoUrl ? (
-                      <Image src={t.logoUrl} alt="" width={28} height={28} unoptimized />
+                      <Image src={t.logoUrl} alt="" width={24} height={24} unoptimized />
                     ) : (
                       <span className="text-xs text-amber-300">
                         {t.logoMissing ? "Missing" : "None"}
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     {dup ? (
-                      <span className="text-xs text-red-300">Duplicate provider ref</span>
+                      <span className="text-xs text-[var(--danger)]">Duplicate</span>
                     ) : (
                       <span className="text-xs text-[var(--text-muted)]">OK</span>
                     )}

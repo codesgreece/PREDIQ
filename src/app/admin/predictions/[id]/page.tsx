@@ -15,15 +15,13 @@ export default async function EditPredictionPage({
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-3xl">
-        Edit prediction
-      </h1>
-      <p className="mt-2 mb-2 text-sm text-[var(--text-muted)]">
+      <h1 className="page-title">Επεξεργασία προγνωστικού</h1>
+      <p className="mt-1.5 text-sm text-[var(--text-muted)]">
         Status: {prediction.publicationStatus} · Settlement:{" "}
         {prediction.settlementStatus}
       </p>
-      <p className="mb-8 text-sm text-[var(--text-muted)]">
-        Editing does not reset settlement status or erase publication history.
+      <p className="mb-4 text-sm text-[var(--text-muted)]">
+        Η επεξεργασία δεν επαναφέρει τη διευθέτηση ούτε διαγράφει ιστορικό δημοσίευσης.
       </p>
       <PredictionForm
         initial={{
