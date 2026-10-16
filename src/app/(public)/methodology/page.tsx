@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import { StaticPage } from "@/components/content/static-page";
 import { prisma } from "@/lib/db";
+import { el } from "@/lib/i18n/el";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Methodology" };
+export const metadata: Metadata = { title: el.pages.methodology.title };
 
 export default async function MethodologyPage() {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: "default" } });
+  const settings = await prisma.siteSettings.findUnique({
+    where: { id: "default" },
+  });
   return (
-    <StaticPage title="Methodology">
+    <StaticPage title={el.pages.methodology.title}>
       <p className="whitespace-pre-wrap">
-        {settings?.methodologyText ||
-          "Each prediction is researched, drafted, reviewed, and explicitly published by an administrator. AI may assist research but never publishes autonomously. Hit rate = Won / (Won + Lost). Pending selections are excluded from the denominator. ROI is reported only when stake and odds are complete for settled results."}
+        {settings?.methodologyText || el.pages.methodology.fallback}
       </p>
     </StaticPage>
   );

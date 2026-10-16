@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { StaticPage } from "@/components/content/static-page";
+import { el } from "@/lib/i18n/el";
 
-export const metadata: Metadata = { title: "Responsible gambling" };
+export const metadata: Metadata = { title: el.pages.responsible.title };
 
 export default function ResponsibleGamblingPage() {
   return (
-    <StaticPage title="Responsible gambling">
-      <p>
-        PREDIQ publishes analytical content and does not encourage reckless wagering.
-        If gambling is causing harm, seek help from a local responsible-gambling
-        organization and use deposit limits, time-outs, or self-exclusion tools
-        offered by licensed operators.
-      </p>
+    <StaticPage title={el.pages.responsible.title}>
+      <p>{el.pages.responsible.body}</p>
     </StaticPage>
   );
 }

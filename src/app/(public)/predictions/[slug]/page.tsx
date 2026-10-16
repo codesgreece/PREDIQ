@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { format } from "date-fns";
-import Image from "next/image";
+import { el as elLocale } from "date-fns/locale";
 import { StatusBadge } from "@/components/predictions/status-badge";
 import { Badge } from "@/components/ui/badge";
+import { CompetitionLogo, TeamLogo } from "@/components/brand/team-logo";
 import { getPublishedPredictionBySlug } from "@/lib/predictions/queries";
 import { plainTextToHtml, sanitizeHtml } from "@/lib/sanitize";
 import { getEnv } from "@/lib/env";
+import { el } from "@/lib/i18n/el";
 
 export const dynamic = "force-dynamic";
 
@@ -24,24 +26,39 @@ function Section({
   if (!show) return null;
   if (!body?.trim()) {
     return (
-      <section className="rounded-xl border border-dashed border-white/10 p-5">
-        <h2 className="text-lg text-[var(--text)]">{title}</h2>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          {unverifiedHint || "Information not provided or not verified."}
+      <section className="surface-card border-dashed p-5 md:p-6">
+        <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--text)]">
+          {title}
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
+          {unverifiedHint || el.analysis.missing}
         </p>
       </section>
     );
   }
   return (
-    <section className="rounded-xl border border-[var(--border)] bg-[var(--card)]/50 p-5">
-      <h2 className="text-lg text-[var(--text)]">{title}</h2>
+    <section className="surface-card p-5 md:p-6">
+      <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--text)]">
+        {title}
+      </h2>
       <div
-        className="prose prose-invert mt-3 max-w-none text-sm leading-relaxed text-[var(--text-muted)]"
+        className="prose prose-invert mt-4 max-w-none text-sm leading-relaxed text-[var(--text-muted)]"
         dangerouslySetInnerHTML={{
           __html: sanitizeHtml(plainTextToHtml(body)),
         }}
       />
     </section>
+  );
+}
+
+function MetaCell({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-white/5 bg-black/20 px-4 py-3">
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+        {label}
+      </dt>
+      <dd className="mt-1.5 text-sm text-[var(--text)]">{value}</dd>
+    </div>
   );
 }
 
@@ -52,11 +69,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const prediction = await getPublishedPredictionBySlug(slug);
-  if (!prediction) return { title: "Prediction not found" };
-  const title = `${prediction.match.homeTeam.name} vs ${prediction.match.awayTeam.name}`;
+  if (!prediction) return { title: el.meta.predictionNotFound };
+  const title = `${prediction.match.homeTeam.name} ${el.common.vs} ${prediction.match.awayTeam.name}`;
   return {
     title,
-    description: `${prediction.marketLabel}: ${prediction.selection}. Published PREDIQ analysis.`,
+    description: `${prediction.marketLabel}: ${prediction.selection}. ${el.meta.publishedAnalysis}`,
     alternates: {
       canonical: `/predictions/${prediction.slug}`,
     },
@@ -91,184 +108,222 @@ export default async function PredictionDetailPage({
   };
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-12 md:px-6">
+    <article className="section-shell py-10 md:py-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       <div className="flex flex-wrap items-center gap-3">
-        <Badge tone="neon">{prediction.competition.name}</Badge>
+        <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm">
+          <CompetitionLogo
+            name={prediction.competition.name}
+            logoUrl={prediction.competition.logoUrl}
+            size={22}
+          />
+          {prediction.competition.name}
+        </span>
         <StatusBadge status={prediction.settlementStatus} />
-        <Badge>Published</Badge>
+        <Badge tone="neon">{el.status.PUBLISHED}</Badge>
       </div>
-      <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl leading-tight">
-        {match.homeTeam.name} vs {match.awayTeam.name}
+
+      <h1 className="mt-5 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-tight tracking-tight md:text-5xl">
+        {match.homeTeam.name} {el.common.vs} {match.awayTeam.name}
       </h1>
-      <p className="mt-3 text-[var(--text-muted)]">{prediction.title}</p>
+      <p className="mt-3 max-w-2xl text-[var(--text-muted)]">{prediction.title}</p>
 
-      <div className="mt-8 flex flex-wrap items-center gap-6 rounded-2xl border border-[var(--border)] bg-[var(--card)]/60 p-6">
-        <div className="flex items-center gap-3">
-          {match.homeTeam.logoUrl ? (
-            <Image
-              src={match.homeTeam.logoUrl}
-              alt=""
-              width={48}
-              height={48}
-              unoptimized
+      <div className="glass mt-8 rounded-3xl p-5 md:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <TeamLogo
+              name={match.homeTeam.name}
+              logoUrl={match.homeTeam.logoUrl}
+              size={56}
             />
-          ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-xs">
-              N/A
-            </div>
-          )}
-          <span>{match.homeTeam.name}</span>
-        </div>
-        <span className="text-[var(--text-muted)]">vs</span>
-        <div className="flex items-center gap-3">
-          {match.awayTeam.logoUrl ? (
-            <Image
-              src={match.awayTeam.logoUrl}
-              alt=""
-              width={48}
-              height={48}
-              unoptimized
+            <span className="text-lg font-medium md:text-xl">
+              {match.homeTeam.name}
+            </span>
+          </div>
+          <span className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
+            VS
+          </span>
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="text-lg font-medium md:text-xl">
+              {match.awayTeam.name}
+            </span>
+            <TeamLogo
+              name={match.awayTeam.name}
+              logoUrl={match.awayTeam.logoUrl}
+              size={56}
             />
-          ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-xs">
-              N/A
-            </div>
-          )}
-          <span>{match.awayTeam.name}</span>
+          </div>
         </div>
       </div>
 
-      <dl className="mt-6 grid gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)]/60 p-6 sm:grid-cols-2">
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Market
-          </dt>
-          <dd className="mt-1">{prediction.marketLabel}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Selection
-          </dt>
-          <dd className="mt-1">{prediction.selection}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Odds at publication
-          </dt>
-          <dd className="mt-1">
-            {prediction.oddsAtPublication != null
+      <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <MetaCell label={el.analysis.market} value={prediction.marketLabel} />
+        <MetaCell label={el.analysis.selection} value={prediction.selection} />
+        <MetaCell
+          label={el.analysis.odds}
+          value={
+            prediction.oddsAtPublication != null
               ? Number(prediction.oddsAtPublication).toFixed(2)
-              : "Not recorded"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Match date
-          </dt>
-          <dd className="mt-1">
-            {match.kickoffAt
-              ? format(match.kickoffAt, "dd MMM yyyy HH:mm")
-              : "Not verified"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Venue
-          </dt>
-          <dd className="mt-1">
-            {match.venue
-              ? `${match.venue}${match.venueVerified ? "" : " (unverified)"}`
-              : "Not verified"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            Published / updated
-          </dt>
-          <dd className="mt-1">
-            {prediction.publishedAt
-              ? format(prediction.publishedAt, "dd MMM yyyy")
-              : "—"}
-            {" · "}
-            {format(prediction.updatedAt, "dd MMM yyyy")}
-          </dd>
-        </div>
+              : el.predictions.oddsMissing
+          }
+        />
+        <MetaCell
+          label={el.analysis.matchDate}
+          value={
+            match.kickoffAt
+              ? format(match.kickoffAt, "d MMMM yyyy HH:mm", { locale: elLocale })
+              : el.analysis.notVerified
+          }
+        />
+        <MetaCell
+          label={el.analysis.venue}
+          value={
+            match.venue
+              ? `${match.venue}${
+                  match.venueVerified ? "" : ` (${el.analysis.unverified})`
+                }`
+              : el.analysis.notVerified
+          }
+        />
+        <MetaCell
+          label={el.analysis.publishedUpdated}
+          value={
+            <>
+              {prediction.publishedAt
+                ? format(prediction.publishedAt, "d MMM yyyy", {
+                    locale: elLocale,
+                  })
+                : "—"}
+              {" · "}
+              {format(prediction.updatedAt, "d MMM yyyy", { locale: elLocale })}
+            </>
+          }
+        />
       </dl>
 
-      <div className="mt-8 grid gap-4">
-        <Section title="Match overview" body={prediction.analysisOverview} show={prediction.showOverview} />
-        <Section title="Recent form" body={prediction.recentForm} show={prediction.showRecentForm} />
-        <Section title="Head-to-head" body={prediction.headToHead} show={prediction.showHeadToHead} />
-        <Section title="Home / away performance" body={prediction.homeAwayStats} show={prediction.showHomeAwayStats} />
+      <div className="mt-10 grid gap-4 lg:grid-cols-2">
         <Section
-          title="Injuries, suspensions & availability"
+          title={el.analysis.overview}
+          body={prediction.analysisOverview}
+          show={prediction.showOverview}
+        />
+        <Section
+          title={el.analysis.recentForm}
+          body={prediction.recentForm}
+          show={prediction.showRecentForm}
+        />
+        <Section
+          title={el.analysis.headToHead}
+          body={prediction.headToHead}
+          show={prediction.showHeadToHead}
+        />
+        <Section
+          title={el.analysis.homeAway}
+          body={prediction.homeAwayStats}
+          show={prediction.showHomeAwayStats}
+        />
+        <Section
+          title={el.analysis.injuries}
           body={prediction.injuriesSuspensions}
           show={prediction.showInjuries}
-          unverifiedHint="No verified availability information provided."
+          unverifiedHint={el.analysis.injuriesMissing}
         />
         <Section
-          title="Expected lineups"
+          title={el.analysis.lineups}
           body={prediction.expectedLineups}
           show={prediction.showLineups}
-          unverifiedHint="Lineups are shown only when supported by sources."
+          unverifiedHint={el.analysis.lineupsMissing}
         />
-        <Section title="Tactical analysis" body={prediction.tacticalAnalysis} show={prediction.showTactical} />
         <Section
-          title="Motivation & psychological context"
+          title={el.analysis.tactical}
+          body={prediction.tacticalAnalysis}
+          show={prediction.showTactical}
+        />
+        <Section
+          title={el.analysis.psychological}
           body={prediction.psychologicalContext}
           show={prediction.showPsychological}
-          unverifiedHint="Psychological context is editorial interpretation, not a verified fact table."
+          unverifiedHint={el.analysis.psychologicalHint}
         />
         <Section
-          title="AI-assisted statistical assessment"
+          title={el.analysis.statistical}
           body={prediction.statisticalAssessment}
           show={prediction.showStatistical}
         />
-        <Section title="Reasons supporting the selection" body={prediction.predictionRationale} show={prediction.showRationale} />
-        <Section title="Counterarguments & risks" body={prediction.counterarguments} show={prediction.showCounterarguments} />
+        <Section
+          title={el.analysis.rationale}
+          body={prediction.predictionRationale}
+          show={prediction.showRationale}
+        />
+        <Section
+          title={el.analysis.risks}
+          body={prediction.counterarguments}
+          show={prediction.showCounterarguments}
+        />
       </div>
 
       {prediction.showSources ? (
-        <section className="mt-8 rounded-xl border border-[var(--border)] p-5">
-          <h2 className="text-lg">Sources</h2>
+        <section className="surface-card mt-8 p-5 md:p-6">
+          <h2 className="font-[family-name:var(--font-display)] text-xl">
+            {el.analysis.sources}
+          </h2>
           {prediction.sources.length ? (
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-4 space-y-3 text-sm">
               {prediction.sources.map((s) => (
-                <li key={s.id}>
+                <li
+                  key={s.id}
+                  className="rounded-xl border border-white/5 bg-black/20 px-4 py-3"
+                >
                   <a
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--neon)] hover:underline"
+                    className="font-medium text-[var(--neon)] hover:underline"
                   >
                     {s.title}
                   </a>
-                  <span className="text-[var(--text-muted)]">
-                    {" "}
-                    · retrieved {format(s.retrievedAt, "dd MMM yyyy HH:mm")}
-                    {s.isVerified ? " · verified" : " · unverified"}
+                  <span className="mt-1 block text-xs text-[var(--text-muted)]">
+                    {el.analysis.retrieved}{" "}
+                    {format(s.retrievedAt, "d MMM yyyy HH:mm", {
+                      locale: elLocale,
+                    })}
+                    {" · "}
+                    {s.isVerified
+                      ? el.analysis.verified
+                      : el.analysis.unverifiedSource}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
-              No sources attached.
+            <p className="mt-3 text-sm text-[var(--text-muted)]">
+              {el.analysis.noSources}
             </p>
           )}
         </section>
       ) : null}
 
-      {prediction.confidenceLevel || prediction.confidenceNote ? (
-        <p className="mt-6 text-xs text-[var(--text-muted)]">
-          Confidence metadata: {prediction.confidenceLevel || "n/a"}
-          {prediction.confidenceNote ? ` — ${prediction.confidenceNote}` : ""}
-        </p>
-      ) : null}
+      <div className="mt-8 surface-card p-5 md:p-6">
+        <h2 className="font-[family-name:var(--font-display)] text-xl">
+          {el.analysis.selection}
+        </h2>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Badge tone="neon">{prediction.marketLabel}</Badge>
+          <span className="rounded-lg bg-white/5 px-3 py-1.5 text-sm font-medium">
+            {prediction.selection}
+          </span>
+          {prediction.oddsAtPublication != null ? (
+            <span className="text-sm text-[var(--text-muted)]">
+              @ {Number(prediction.oddsAtPublication).toFixed(2)}
+            </span>
+          ) : null}
+          <StatusBadge status={prediction.settlementStatus} />
+        </div>
+      </div>
     </article>
   );
 }

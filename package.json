@@ -16,6 +16,7 @@
     "db:push": "prisma db push",
     "bootstrap-admin": "tsx scripts/bootstrap-admin.ts",
     "sync:sports": "tsx scripts/sync-sports.ts",
+    "cleanup:demo": "tsx scripts/cleanup-demo-public.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

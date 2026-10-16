@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { PredictionCard } from "@/components/predictions/prediction-card";
+import { CompetitionLogo } from "@/components/brand/team-logo";
 import { prisma } from "@/lib/db";
-import { listPublishedPredictions } from "@/lib/predictions/queries";
+import {
+  listPublishedPredictions,
+  publicMetricsWhere,
+} from "@/lib/predictions/queries";
+import { el } from "@/lib/i18n/el";
 
 export const dynamic = "force-dynamic";
 
@@ -14,14 +18,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const competition = await prisma.competition.findUnique({ where: { slug } });
-  if (!competition) return { title: "Competition" };
+  if (!competition) return { title: el.competitions.title };
   const count = await prisma.prediction.count({
-    where: { competitionId: competition.id, publicationStatus: "PUBLISHED" },
+    where: publicMetricsWhere({ competitionId: competition.id }),
   });
   return {
     title: competition.name,
-    description: `Published PREDIQ predictions for ${competition.name}.`,
-    robots: count > 0 ? { index: true, follow: true } : { index: false, follow: false },
+    description: `${el.competitions.title}: ${competition.name}.`,
+    robots:
+      count > 0 ? { index: true, follow: true } : { index: false, follow: false },
     alternates: { canonical: `/competitions/${competition.slug}` },
   };
 }
@@ -46,30 +51,24 @@ export default async function CompetitionDetailPage({
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 md:px-6">
+    <div className="section-shell py-12">
       <div className="flex items-center gap-4">
-        {competition.logoUrl ? (
-          <Image
-            src={competition.logoUrl}
-            alt=""
-            width={56}
-            height={56}
-            unoptimized
-          />
-        ) : null}
+        <CompetitionLogo
+          name={competition.name}
+          logoUrl={competition.logoUrl}
+          size={56}
+        />
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-4xl">
-            {competition.name}
-          </h1>
+          <h1 className="section-title">{competition.name}</h1>
           <p className="mt-2 text-[var(--text-muted)]">
-            {competition.country?.name || "International"} ·{" "}
-            {listed.total} published prediction{listed.total === 1 ? "" : "s"}
+            {competition.country?.name || el.competitions.international} ·{" "}
+            {listed.total} {el.competitions.published}
           </p>
         </div>
       </div>
 
       <p className="mt-4 text-sm text-[var(--text-muted)]">
-        This page lists published prediction records only — not upcoming fixtures.
+        {el.competitions.onlyPublished}
       </p>
 
       {listed.items.length ? (
@@ -79,8 +78,8 @@ export default async function CompetitionDetailPage({
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-2xl border border-dashed border-white/10 p-10 text-center text-[var(--text-muted)]">
-          No published predictions for this competition yet.
+        <div className="surface-card mt-8 border-dashed p-10 text-center text-[var(--text-muted)]">
+          {el.competitions.noPredictions}
         </div>
       )}
     </div>

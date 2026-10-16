@@ -6,13 +6,21 @@
   --bg: #080d0c;
   --bg-secondary: #101816;
   --card: #121d19;
+  --card-elevated: #16221e;
   --neon: #20e890;
   --teal: #00cba8;
   --text: #f5f7f6;
   --text-muted: #9baaa4;
-  --border: rgba(32, 232, 144, 0.12);
+  --border: rgba(32, 232, 144, 0.14);
+  --border-strong: rgba(32, 232, 144, 0.28);
+  --danger: #f07178;
+  --won: #34d399;
+  --lost: #f87171;
+  --pending: #7dd3fc;
+  --void: #a1a1aa;
   --background: var(--bg);
   --foreground: var(--text);
+  --radius: 1rem;
 }
 
 html {
@@ -22,9 +30,9 @@ html {
 body {
   color: var(--text);
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(32, 232, 144, 0.08), transparent 55%),
-    radial-gradient(900px 500px at 10% 0%, rgba(0, 203, 168, 0.06), transparent 50%),
-    linear-gradient(180deg, #0a1210 0%, var(--bg) 40%, #070b0a 100%);
+    radial-gradient(1100px 520px at 85% -8%, rgba(32, 232, 144, 0.1), transparent 55%),
+    radial-gradient(800px 420px at 8% 0%, rgba(0, 203, 168, 0.07), transparent 50%),
+    linear-gradient(180deg, #0a1210 0%, var(--bg) 38%, #060a09 100%);
   min-height: 100vh;
 }
 
@@ -33,24 +41,58 @@ body {
   color: #fff;
 }
 
-.glass {
-  background: rgba(18, 29, 25, 0.72);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(14px);
-}
+@layer components {
+  .glass {
+    background: rgba(18, 29, 25, 0.78);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+  }
 
-.hero-grid {
-  background-image:
-    linear-gradient(rgba(32, 232, 144, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(32, 232, 144, 0.05) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  .surface-card {
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: rgba(18, 29, 25, 0.92);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+  }
+
+  .section-shell {
+    @apply mx-auto w-full max-w-6xl px-4 md:px-6;
+  }
+
+  .section-title {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    @apply text-3xl tracking-tight text-[var(--text)] md:text-4xl;
+  }
+
+  .section-subtitle {
+    @apply mt-2 max-w-2xl text-sm leading-relaxed text-[var(--text-muted)] md:text-base;
+  }
+
+  .hero-grid {
+    background-image:
+      linear-gradient(rgba(32, 232, 144, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(32, 232, 144, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, black 28%, transparent 74%);
+  }
+
+  .field-pitch {
+    background:
+      linear-gradient(160deg, rgba(18, 29, 25, 0.95), rgba(8, 13, 12, 0.88)),
+      repeating-linear-gradient(
+        90deg,
+        rgba(32, 232, 144, 0.04) 0,
+        rgba(32, 232, 144, 0.04) 1px,
+        transparent 1px,
+        transparent 48px
+      );
+  }
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -61,10 +103,20 @@ body {
 @keyframes pulse-line {
   0%,
   100% {
-    opacity: 0.35;
+    opacity: 0.3;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.85;
+  }
+}
+
+@keyframes glow-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(32, 232, 144, 0);
+  }
+  50% {
+    box-shadow: 0 0 40px 0 rgba(32, 232, 144, 0.08);
   }
 }
 
@@ -73,9 +125,13 @@ body {
 }
 
 .animate-rise-delay {
-  animation: rise-in 800ms ease-out 120ms both;
+  animation: rise-in 800ms ease-out 140ms both;
 }
 
 .animate-pulse-line {
   animation: pulse-line 3.2s ease-in-out infinite;
+}
+
+.animate-glow-soft {
+  animation: glow-soft 4.5s ease-in-out infinite;
 }

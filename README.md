@@ -2,6 +2,8 @@
 
 Premium platform for **manually researched, AI-assisted** sports predictions. Administrators select matches, research them, draft analyses, and explicitly publish. The public site shows only published predictions and transparent historical performance — never fixtures calendars, live scores, or auto-generated tips.
 
+The public UI is **Greek** (brand name PREDIQ stays English). Dark charcoal / neon-green design tokens live in `src/app/globals.css`.
+
 ## Stack
 
 - Next.js App Router (TypeScript, Tailwind CSS)

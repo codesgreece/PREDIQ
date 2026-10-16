@@ -3,15 +3,18 @@ import { PredictionCard } from "@/components/predictions/prediction-card";
 import { PerformanceOverview } from "@/components/metrics/performance-overview";
 import { prisma } from "@/lib/db";
 import { calculatePerformance } from "@/lib/metrics/performance";
-import { listPublishedPredictions } from "@/lib/predictions/queries";
+import {
+  listPublishedPredictions,
+  publicMetricsWhere,
+} from "@/lib/predictions/queries";
 import { publicPredictionFilterSchema } from "@/lib/validations/prediction";
+import { el } from "@/lib/i18n/el";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Performance History",
-  description:
-    "Transparent PREDIQ prediction record including wins, losses, and pending selections.",
+  title: el.performance.historyTitle,
+  description: el.performance.historySubtitle,
 };
 
 export default async function PerformancePage({
@@ -32,26 +35,27 @@ export default async function PerformancePage({
     sort: "published_desc",
   });
 
+  const metricsWhere = publicMetricsWhere({
+    ...(filters.sport ? { sport: { slug: filters.sport } } : {}),
+    ...(filters.competition
+      ? { competition: { slug: filters.competition } }
+      : {}),
+    ...(filters.market ? { marketType: filters.market } : {}),
+    ...(filters.status ? { settlementStatus: filters.status } : {}),
+    ...(filters.from || filters.to
+      ? {
+          publishedAt: {
+            ...(filters.from ? { gte: filters.from } : {}),
+            ...(filters.to ? { lte: filters.to } : {}),
+          },
+        }
+      : {}),
+  });
+
   const [listed, allForMetrics, sports, competitions] = await Promise.all([
     listPublishedPredictions(filters),
     prisma.prediction.findMany({
-      where: {
-        publicationStatus: "PUBLISHED",
-        ...(filters.sport ? { sport: { slug: filters.sport } } : {}),
-        ...(filters.competition
-          ? { competition: { slug: filters.competition } }
-          : {}),
-        ...(filters.market ? { marketType: filters.market } : {}),
-        ...(filters.status ? { settlementStatus: filters.status } : {}),
-        ...(filters.from || filters.to
-          ? {
-              publishedAt: {
-                ...(filters.from ? { gte: filters.from } : {}),
-                ...(filters.to ? { lte: filters.to } : {}),
-              },
-            }
-          : {}),
-      },
+      where: metricsWhere,
       select: {
         settlementStatus: true,
         oddsAtPublication: true,
@@ -59,9 +63,9 @@ export default async function PerformancePage({
         publicationStatus: true,
       },
     }),
-    prisma.sport.findMany(),
+    prisma.sport.findMany({ orderBy: { name: "asc" } }),
     prisma.competition.findMany({
-      where: { predictions: { some: { publicationStatus: "PUBLISHED" } } },
+      where: { predictions: { some: publicMetricsWhere() } },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -69,22 +73,17 @@ export default async function PerformancePage({
   const metrics = calculatePerformance(allForMetrics);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 md:px-6">
-      <h1 className="font-[family-name:var(--font-display)] text-4xl">
-        Performance history
-      </h1>
-      <p className="mt-3 max-w-2xl text-[var(--text-muted)]">
-        Full published record, including losses. Historical results are not
-        silently rewritten.
-      </p>
+    <div className="section-shell py-12">
+      <h1 className="section-title">{el.performance.historyTitle}</h1>
+      <p className="section-subtitle">{el.performance.historySubtitle}</p>
 
-      <form className="mt-8 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)]/50 p-4 md:grid-cols-3 lg:grid-cols-6">
+      <form className="mt-8 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)]/60 p-4 md:grid-cols-3 lg:grid-cols-6">
         <select
           name="sport"
           defaultValue={filters.sport || ""}
-          className="h-10 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
         >
-          <option value="">Sport</option>
+          <option value="">{el.performance.sport}</option>
           {sports.map((s) => (
             <option key={s.id} value={s.slug}>
               {s.name}
@@ -94,9 +93,9 @@ export default async function PerformancePage({
         <select
           name="competition"
           defaultValue={filters.competition || ""}
-          className="h-10 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
         >
-          <option value="">Competition</option>
+          <option value="">{el.performance.competition}</option>
           {competitions.map((c) => (
             <option key={c.id} value={c.slug}>
               {c.name}
@@ -106,41 +105,45 @@ export default async function PerformancePage({
         <select
           name="market"
           defaultValue={filters.market || ""}
-          className="h-10 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
         >
-          <option value="">Market</option>
-          <option value="MATCH_RESULT_1X2">1X2</option>
-          <option value="OVER_UNDER">Over/Under</option>
-          <option value="BOTH_TEAMS_TO_SCORE">BTTS</option>
-          <option value="DOUBLE_CHANCE">Double chance</option>
-          <option value="DRAW_NO_BET">Draw no bet</option>
+          <option value="">{el.performance.market}</option>
+          <option value="MATCH_RESULT_1X2">{el.markets.MATCH_RESULT_1X2}</option>
+          <option value="OVER_UNDER">{el.markets.OVER_UNDER}</option>
+          <option value="BOTH_TEAMS_TO_SCORE">{el.markets.BOTH_TEAMS_TO_SCORE}</option>
+          <option value="DOUBLE_CHANCE">{el.markets.DOUBLE_CHANCE}</option>
+          <option value="DRAW_NO_BET">{el.markets.DRAW_NO_BET}</option>
         </select>
         <select
           name="status"
           defaultValue={filters.status || ""}
-          className="h-10 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
         >
-          <option value="">Result</option>
-          <option value="WON">Won</option>
-          <option value="LOST">Lost</option>
-          <option value="PENDING">Pending</option>
-          <option value="VOID">Void</option>
+          <option value="">{el.performance.result}</option>
+          <option value="WON">{el.status.WON}</option>
+          <option value="LOST">{el.status.LOST}</option>
+          <option value="PENDING">{el.status.PENDING}</option>
+          <option value="VOID">{el.status.VOID}</option>
         </select>
         <input
           type="date"
           name="from"
+          aria-label={el.common.from}
           defaultValue={
             filters.from ? filters.from.toISOString().slice(0, 10) : ""
           }
-          className="h-10 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
+          className="h-11 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-sm"
         />
-        <button className="h-10 rounded-md bg-[var(--neon)] text-sm font-semibold text-[#04140f]">
-          Filter
+        <button className="h-11 rounded-xl bg-[var(--neon)] text-sm font-semibold text-[#04140f]">
+          {el.performance.filter}
         </button>
       </form>
 
       <div className="mt-10">
-        <PerformanceOverview metrics={metrics} title="Recorded metrics" />
+        <PerformanceOverview
+          metrics={metrics}
+          title={el.performance.recorded}
+        />
       </div>
 
       <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -149,8 +152,8 @@ export default async function PerformancePage({
         ))}
       </div>
       {!listed.items.length ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-white/10 p-10 text-center text-[var(--text-muted)]">
-          No published predictions in this period.
+        <div className="surface-card mt-8 border-dashed p-10 text-center text-[var(--text-muted)]">
+          {el.performance.emptyPeriod}
         </div>
       ) : null}
     </div>

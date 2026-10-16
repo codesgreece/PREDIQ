@@ -272,6 +272,7 @@ model Prediction {
   unpublishedAt        DateTime?
   settlementStatus     SettlementStatus  @default(PENDING)
   isFeatured           Boolean           @default(false)
+  isDemo               Boolean           @default(false)
   confidenceLevel      String?
   confidenceNote       String?
   analysisOverview     String?
@@ -317,6 +318,7 @@ model Prediction {
   @@index([sportId, publicationStatus])
   @@index([competitionId, publicationStatus])
   @@index([isFeatured, publicationStatus])
+  @@index([isDemo, publicationStatus])
   @@index([marketType])
 }
 

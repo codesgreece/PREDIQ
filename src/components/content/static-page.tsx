@@ -6,10 +6,12 @@ export function StaticPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 md:px-6">
-      <h1 className="font-[family-name:var(--font-display)] text-4xl">{title}</h1>
-      <div className="prose prose-invert mt-6 max-w-none text-[var(--text-muted)]">
-        {children}
+    <div className="section-shell py-12 md:py-16">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="section-title">{title}</h1>
+        <div className="prose prose-invert mt-8 max-w-none space-y-4 text-base leading-relaxed text-[var(--text-muted)]">
+          {children}
+        </div>
       </div>
     </div>
   );

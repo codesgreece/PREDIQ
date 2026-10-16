@@ -1,4 +1,5 @@
 import type { PerformanceMetrics } from "@/lib/metrics/performance";
+import { el } from "@/lib/i18n/el";
 
 function Metric({
   label,
@@ -10,11 +11,11 @@ function Metric({
   hint?: string;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/70 p-5">
-      <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
+    <div className="surface-card p-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
         {label}
       </p>
-      <p className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--text)]">
+      <p className="mt-3 font-[family-name:var(--font-display)] text-3xl tracking-tight text-[var(--text)]">
         {value}
       </p>
       {hint ? <p className="mt-2 text-xs text-[var(--text-muted)]">{hint}</p> : null}
@@ -24,21 +25,16 @@ function Metric({
 
 export function PerformanceOverview({
   metrics,
-  title = "Prediction performance",
+  title = el.performance.title,
 }: {
   metrics: PerformanceMetrics;
   title?: string;
 }) {
   if (metrics.totalPublished === 0) {
     return (
-      <section className="rounded-2xl border border-dashed border-white/10 bg-[var(--card)]/40 p-8 text-center">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--text)]">
-          {title}
-        </h2>
-        <p className="mt-3 text-sm text-[var(--text-muted)]">
-          No published predictions yet. Performance metrics appear only from
-          real published records.
-        </p>
+      <section className="surface-card border-dashed p-8 text-center md:p-10">
+        <h2 className="section-title text-2xl md:text-3xl">{title}</h2>
+        <p className="section-subtitle mx-auto">{el.performance.empty}</p>
       </section>
     );
   }
@@ -46,34 +42,29 @@ export function PerformanceOverview({
   return (
     <section>
       <div className="mb-6">
-        <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--text)]">
-          {title}
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">
-          Hit rate excludes pending selections. ROI is shown only when every
-          settled won/lost record includes valid stake and odds.
-        </p>
+        <h2 className="section-title">{title}</h2>
+        <p className="section-subtitle">{el.performance.subtitle}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Metric label="Settled" value={String(metrics.settled)} />
-        <Metric label="Won" value={String(metrics.won)} />
-        <Metric label="Lost" value={String(metrics.lost)} />
-        <Metric label="Pending" value={String(metrics.pending)} />
+        <Metric label={el.performance.settled} value={String(metrics.settled)} />
+        <Metric label={el.performance.won} value={String(metrics.won)} />
+        <Metric label={el.performance.lost} value={String(metrics.lost)} />
+        <Metric label={el.performance.pending} value={String(metrics.pending)} />
         <Metric
-          label="Hit rate"
+          label={el.performance.hitRate}
           value={
             metrics.hitRate == null ? "—" : `${metrics.hitRate.toFixed(1)}%`
           }
-          hint="Won / (Won + Lost)"
+          hint={el.performance.hitRateHint}
         />
         <Metric
-          label="ROI"
+          label={el.performance.roi}
           value={metrics.roi == null ? "—" : `${metrics.roi.toFixed(1)}%`}
           hint={
             metrics.roi == null
               ? metrics.roiIncompleteCount > 0
-                ? "Incomplete stake/odds data"
-                : "Insufficient settled stake/odds data"
+                ? el.performance.roiIncomplete
+                : el.performance.roiInsufficient
               : `P/L ${metrics.profitLoss?.toFixed(2)}`
           }
         />

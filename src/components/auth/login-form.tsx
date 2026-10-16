@@ -41,14 +41,14 @@ export function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Η σύνδεση απέτυχε");
         setLoading(false);
         return;
       }
       router.push("/admin");
       router.refresh();
     } catch {
-      setError("Network error");
+      setError("Σφάλμα δικτύου");
       setLoading(false);
     }
   }
@@ -58,10 +58,10 @@ export function LoginForm({
       <div className="glass w-full max-w-md rounded-2xl p-8">
         <PrediqLogo showTagline />
         <h1 className="mt-8 font-[family-name:var(--font-display)] text-2xl">
-          Administrator login
+          Σύνδεση διαχειριστή
         </h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Public registration is disabled. Use the bootstrap admin account.
+          Η δημόσια εγγραφή είναι απενεργοποιημένη. Χρησιμοποιήστε τον λογαριασμό bootstrap.
         </p>
         <form
           onSubmit={onSubmit}
@@ -84,7 +84,7 @@ export function LoginForm({
           </div>
           <div>
             <label className="mb-1 block text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">
-              Password
+              Κωδικός
             </label>
             <Input
               type="password"
@@ -97,7 +97,7 @@ export function LoginForm({
           </div>
           {error ? <p className="text-sm text-red-300">{error}</p> : null}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Σύνδεση…" : "Σύνδεση"}
           </Button>
         </form>
       </div>

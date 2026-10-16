@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     template: "%s · PREDIQ",
   },
   description:
-    "Manually researched, AI-assisted sports predictions. Published analyses only — no fixtures feed, no live scores, no auto-tips.",
+    "Χειροκίνητα ερευνημένα προγνωστικά με υποστήριξη AI. Μόνο δημοσιευμένες αναλύσεις — χωρίς ημερολόγιο αγώνων, ζωντανά σκορ ή αυτόματα tips.",
   openGraph: {
     title: "PREDIQ — AI Sports Predictions",
     description:
-      "Evidence-based sports analysis with administrator-reviewed publication.",
+      "Τεκμηριωμένη ανάλυση ποδοσφαίρου με έλεγχο και δημοσίευση από διαχειριστή.",
     url: appUrl,
     siteName: "PREDIQ",
     type: "website",

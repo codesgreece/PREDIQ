@@ -9,6 +9,8 @@ type Filters = z.infer<typeof publicPredictionFilterSchema>;
 export function buildPublicWhere(filters: Filters): Prisma.PredictionWhereInput {
   const where: Prisma.PredictionWhereInput = {
     publicationStatus: "PUBLISHED",
+    // Demo/seed records never appear on the public site or in public metrics.
+    isDemo: false,
   };
 
   if (filters.q) {
@@ -69,7 +71,7 @@ export async function listPublishedPredictions(filters: Filters) {
 
 export async function getPublishedPredictionBySlug(slug: string) {
   return prisma.prediction.findFirst({
-    where: { slug, publicationStatus: "PUBLISHED" },
+    where: { slug, publicationStatus: "PUBLISHED", isDemo: false },
     include: publicInclude,
   });
 }
@@ -81,14 +83,26 @@ export async function getFeaturedPrediction() {
       where: {
         id: settings.featuredPredictionId,
         publicationStatus: "PUBLISHED",
+        isDemo: false,
       },
       include: publicInclude,
     });
     if (featured) return featured;
   }
   return prisma.prediction.findFirst({
-    where: { publicationStatus: "PUBLISHED", isFeatured: true },
+    where: { publicationStatus: "PUBLISHED", isFeatured: true, isDemo: false },
     include: publicInclude,
     orderBy: { publishedAt: "desc" },
   });
+}
+
+/** Genuine published predictions only — used for public performance metrics. */
+export function publicMetricsWhere(
+  extra: Prisma.PredictionWhereInput = {},
+): Prisma.PredictionWhereInput {
+  return {
+    publicationStatus: "PUBLISHED",
+    isDemo: false,
+    ...extra,
+  };
 }

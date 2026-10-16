@@ -266,9 +266,9 @@ async function main() {
       siteName: "PREDIQ",
       tagline: "AI SPORTS PREDICTIONS",
       aboutText:
-        "PREDIQ publishes manually researched, AI-assisted sports predictions. Nothing goes live without an administrator review.",
+        "Το PREDIQ δημοσιεύει χειροκίνητα ερευνημένα προγνωστικά με υποστήριξη AI. Τίποτα δεν δημοσιεύεται χωρίς έλεγχο διαχειριστή.",
       methodologyText:
-        "Each prediction is researched, drafted, reviewed, and explicitly published by an administrator. Hit rate excludes pending selections.",
+        "Κάθε προγνωστικό ερευνάται, συντάσσεται, ελέγχεται και δημοσιεύεται ρητά από διαχειριστή. Το ποσοστό επιτυχίας αποκλείει τα εκκρεμή.",
       contactEmail: "contact@prediq.local",
     },
     create: {
@@ -276,17 +276,22 @@ async function main() {
       siteName: "PREDIQ",
       tagline: "AI SPORTS PREDICTIONS",
       aboutText:
-        "PREDIQ publishes manually researched, AI-assisted sports predictions. Nothing goes live without an administrator review.",
+        "Το PREDIQ δημοσιεύει χειροκίνητα ερευνημένα προγνωστικά με υποστήριξη AI. Τίποτα δεν δημοσιεύεται χωρίς έλεγχο διαχειριστή.",
       methodologyText:
-        "Each prediction is researched, drafted, reviewed, and explicitly published by an administrator. Hit rate excludes pending selections.",
+        "Κάθε προγνωστικό ερευνάται, συντάσσεται, ελέγχεται και δημοσιεύεται ρητά από διαχειριστή. Το ποσοστό επιτυχίας αποκλείει τα εκκρεμή.",
       contactEmail: "contact@prediq.local",
     },
   });
 
-  // One published settled demo prediction + one draft (private) + one pending published.
+  // Demo predictions for local admin testing only. Always isDemo=true so they
+  // never appear on the public site or in public performance metrics.
   const published = await prisma.prediction.upsert({
     where: { slug: "olympiacos-panathinaikos-home-seed" },
-    update: {},
+    update: {
+      isDemo: true,
+      isFeatured: false,
+      publicationStatus: PublicationStatus.UNPUBLISHED,
+    },
     create: {
       slug: "olympiacos-panathinaikos-home-seed",
       title: "Olympiacos vs Panathinaikos — Home win (seed demo)",
@@ -298,10 +303,11 @@ async function main() {
       selection: "HOME",
       oddsAtPublication: 1.95,
       stake: 10,
-      publicationStatus: PublicationStatus.PUBLISHED,
+      publicationStatus: PublicationStatus.UNPUBLISHED,
       publishedAt: new Date("2025-10-28T12:00:00.000Z"),
       settlementStatus: SettlementStatus.WON,
-      isFeatured: true,
+      isFeatured: false,
+      isDemo: true,
       analysisOverview:
         "Seed demo analysis for local development. This record is labeled as seed data and is not a live tip.",
       recentForm:
@@ -348,7 +354,11 @@ async function main() {
 
   await prisma.prediction.upsert({
     where: { slug: "arsenal-liverpool-btts-pending-seed" },
-    update: {},
+    update: {
+      isDemo: true,
+      isFeatured: false,
+      publicationStatus: PublicationStatus.UNPUBLISHED,
+    },
     create: {
       slug: "arsenal-liverpool-btts-pending-seed",
       title: "Arsenal vs Liverpool — Both teams to score (seed demo)",
@@ -360,10 +370,11 @@ async function main() {
       selection: "YES",
       oddsAtPublication: 1.72,
       stake: 10,
-      publicationStatus: PublicationStatus.PUBLISHED,
+      publicationStatus: PublicationStatus.UNPUBLISHED,
       publishedAt: new Date("2025-12-01T09:00:00.000Z"),
       settlementStatus: SettlementStatus.PENDING,
       isFeatured: false,
+      isDemo: true,
       analysisOverview:
         "Published seed demo awaiting settlement. Not a live commercial tip.",
       predictionRationale: "Used to demonstrate pending public status handling.",
@@ -374,7 +385,7 @@ async function main() {
 
   await prisma.prediction.upsert({
     where: { slug: "draft-private-seed" },
-    update: {},
+    update: { isDemo: true },
     create: {
       slug: "draft-private-seed",
       title: "Private draft — must not appear publicly",
@@ -387,6 +398,7 @@ async function main() {
       selectionDetail: "2.5",
       publicationStatus: PublicationStatus.DRAFT,
       settlementStatus: SettlementStatus.PENDING,
+      isDemo: true,
       analysisOverview: "This draft must remain private.",
       createdById: admin.id,
       updatedById: admin.id,
@@ -395,12 +407,13 @@ async function main() {
 
   await prisma.siteSettings.update({
     where: { id: "default" },
-    data: { featuredPredictionId: published.id },
+    data: { featuredPredictionId: null },
   });
 
   console.log("Seed complete.");
   console.log(`Admin: ${email}`);
-  console.log("Demo catalog uses provider key 'seed' with logoMissing=true.");
+  console.log("Demo catalog uses provider key 'seed' with logoMissing=true and isDemo=true.");
+  console.log("Demo predictions are unpublished and excluded from the public site.");
   console.log("Configure API_FOOTBALL_KEY and run npm run sync:sports for licensed data.");
 }
 

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
+import { publicMetricsWhere } from "@/lib/predictions/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +10,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ).replace(/\/$/, "");
   const [predictions, competitions] = await Promise.all([
     prisma.prediction.findMany({
-      where: { publicationStatus: "PUBLISHED" },
+      where: publicMetricsWhere(),
       select: { slug: true, updatedAt: true },
     }),
     prisma.competition.findMany({
-      where: { predictions: { some: { publicationStatus: "PUBLISHED" } } },
+      where: { predictions: { some: publicMetricsWhere() } },
       select: { slug: true, updatedAt: true },
     }),
   ]);
