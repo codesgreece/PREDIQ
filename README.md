@@ -96,7 +96,8 @@ Optional. Set `AI_API_KEY` (+ `AI_API_BASE_URL`, `AI_MODEL`) for OpenAI-compatib
 | `npm run test` | Vitest suite |
 | `npm run typecheck` | TypeScript check |
 | `npm run lint` | ESLint |
-| `npm run db:seed` | Seed admin + demo catalog |
+| `npm run db:seed` | Seed admin + local demo catalog (`isDemo=true`, unpublished) |
+| `npm run cleanup:demo` | Unpublish / mark seed demo predictions for production safety |
 | `npm run bootstrap-admin` | Create/update first admin |
 | `npm run sync:sports` | Sync competitions/teams via API-Football |
 
@@ -110,8 +111,10 @@ Optional. Set `AI_API_KEY` (+ `AI_API_BASE_URL`, `AI_MODEL`) for OpenAI-compatib
    - `APP_URL` (your production URL)
    - optional: `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD`, `API_FOOTBALL_KEY`, `AI_API_KEY`
 3. Build command is already `prisma generate && prisma migrate deploy && next build`.
-4. After first deploy, seed once if needed: `npm run db:seed` against the production `DATABASE_URL`.
-5. Do not store production data or uploads on the ephemeral serverless filesystem.
+4. After first deploy, bootstrap the admin (`npm run bootstrap-admin`). Prefer **not** running `db:seed` against production; if seed was ever applied, run `npm run cleanup:demo` so demo rows stay unpublished and excluded from public metrics (`isDemo=true`).
+5. Public queries and performance metrics only include `publicationStatus=PUBLISHED` and `isDemo=false`.
+6. Do not store production data or uploads on the ephemeral serverless filesystem.
+7. Real team/competition logos require `API_FOOTBALL_KEY` and `npm run sync:sports`. Without it, placeholder initials are shown.
 
 ## Security notes
 
